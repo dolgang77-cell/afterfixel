@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigTV</title>
+    <!-- Fonts and Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="header" id="header">
+        <div class="header-left">
+            <div class="logo">
+                <span class="logo-text green">Big</span><span class="logo-text red">TV</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="active">홈</a>
+                <a href="#">영화</a>
+                <a href="#">시리즈</a>
+                <a href="#" class="badge-item">실시간 <span class="badge-n">N</span></a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <button class="icon-btn search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <div class="profile-icon"></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-overlay"></div>
+            <!-- Captain Hook like image placeholder -->
+            <img class="hero-img" src="images/main_top_thumb.jpg" alt="Hero Background">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="n-badge">N</span> 상상을초월하는 모험액션대작
+                    ( 캡틴 후크 ) 공식자막 초고화질 5.1
+                </h1>
+                <div class="hero-actions">
+                    <button class="btn btn-play"><i class="fa-solid fa-play"></i> 재생</button>
+                    <button class="btn btn-info"><i class="fa-regular fa-circle-down"></i> 에피소드 보기</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 1: 오늘의 추천 영화 -->
+        <section class="slider-section hero-overlap">
+            <h2 class="section-title">오늘의 추천 영화</h2>
+            <div class="slider-wrapper">
+                <div class="slider" id="movie-slider">
+                    <!-- Movie 1 Active -->
+                    <div class="card poster-card active-landscape active" tabindex="0" data-title="나는갱년기다"
+                        data-meta="영화 | 액션, 범죄 | 112분 | 12세 이상"
+                        data-desc="나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.">
+                        <img src="images/01thumb01_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/01thumb01_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">나는갱년기다</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="콘크리트마켓"
+                        data-meta="영화 | 액션, 스릴러 | 124분 | 15세 이상"
+                        data-desc="사막 한가운데서 벌어지는 숨 막히는 구출 작전.두 용병의 예측 불허 콤비 플레이!">
+                        <img src="images/01thumb02_height.jpg" class="img-portrait" alt="추천영화 2 세로">
+                        <img src="images/01thumb02_width.jpg" class="img-landscape" alt="추천영화 2 가로">
+                        <span class="card-title-overlay">콘크리트마켓</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="정보원" data-meta="영화 | SF, 액션 | 120분 | 15세 이상"
+                        data-desc="희망 없는 세상, 미친 자들만이 살아남는다.디스토피아를 질주하는 미친 액션 쾌감!">
+                        <img src="images/01thumb03_height.jpg" class="img-portrait" alt="추천영화 3 세로">
+                        <img src="images/01thumb03_width.jpg" class="img-landscape" alt="추천영화 3 가로">
+                        <span class="card-title-overlay">정보원</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="퍼스트라이드"
+                        data-meta="영화 | 액션, 첩보 | 147분 | 15세 이상"
+                        data-desc="불가능한 미션, 피할 수 없는 선택.전 세계를 구하기 위한 에단 헌트의 짜릿한 액션!">
+                        <img src="images/01thumb04_height.jpg" class="img-portrait" alt="추천영화 4 세로">
+                        <img src="images/01thumb04_width.jpg" class="img-landscape" alt="추천영화 4 가로">
+                        <span class="card-title-overlay">퍼스트라이드</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="윗집사람들"
+                        data-meta="영화 | 액션, 마블 | 181분 | 12세 이상"
+                        data-desc="모든 것을 걸었다. 타노스에 맞서는 최후의 전투.마블 시네마틱 유니버스의 화려한 피날레.">
+                        <img src="images/01thumb05_height.jpg" class="img-portrait" alt="추천영화 5 세로">
+                        <img src="images/01thumb05_width.jpg" class="img-landscape" alt="추천영화 5 가로">
+                        <span class="card-title-overlay">윗집사람들</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Expanded Details below Active item -->
+            <div class="expanded-details active-details">
+                <div class="details-content" id="movie-details">
+                    <p class="meta">영화 | 액션, 범죄 | 112분 | 12세 이상</p>
+                    <p class="desc">나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 2: 영화 BEST10 -->
+        <section class="slider-section ranking-section">
+            <h2 class="section-title">영화 BEST10</h2>
+            <div class="slider-wrapper">
+                <div class="slider rank-slider" id="rank-movie-slider">
+
+                    <div class="rank-item" tabindex="0" data-title="매드맥스 조지 밀러 마스터피스"
+                        data-meta="영화 | 액션, SF | 120분 | 15세 이상" data-desc="미친 배기음과 폭발적인 액션의 정수.">
+                        <div class="card rank-card active-landscape active">
+                            <img src="images/b01thumb01_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">N 에반스 초대형 액션작 블록버스터 정말 재밌다 - 공식자막 초고화질</p>
+                            </div>
+                        </div>
+                        <div class="bnum bnum-1"><img src="images/bnum01.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="자전차왕 엄복동" data-meta="영화 | 시대극, 드라마 | 116분 | 12세 이상"
+                        data-desc="일제강점기 조선 최고의 자전차 선수 엄복동의 가슴 뜨거운 승부.">
+                        <div class="card rank-card">
+                            <img src="images/b01thumb02_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">N 처절한사투 거 대 한 운명에 맞서싸운다 -초고화질 BluRay5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum02.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="좀비가 되어도 포기할 수 없는"
+                        data-meta="영화 | 공포, 코미디 | 98분 | 15세 이상" data-desc="좀비 사태 속 최후의 생존자들의 유쾌한 사투.">
+                        <div class="card rank-card">
+                            <img src="images/b01thumb03_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">[좀비딸] 좀비가 되었어도 포기할 수 없는 내 딸 식자막 초고화질 BluRay5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum03.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="탑건 매버릭" data-meta="영화 | 액션, 드라마 | 130분 | 12세 이상"
+                        data-desc="최고의 파일럿 매버릭과 새로운 팀원들의 목숨을 건 불가능한 비행.">
+                        <div class="card rank-card">
+                            <img src="images/b01thumb04_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">1월NEW 리얼액션 떳다 (( 특 급 수 사 )) 공식자막 초고화질 BluRay5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum04.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="존윅 4 무삭제" data-meta="영화 | 액션, 스릴러 | 169분 | 19세 이상"
+                        data-desc="자유를 위해 모든 것을 건 존 윅의 최후의 전쟁.">
+                        <div class="card rank-card">
+                            <img src="images/b01thumb05_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">N 초대형 S F 액션대작 (( 정 복 자 들 )) 공식자막 초고화질 FHD 5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum05.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="매드맥스 조지 밀러 마스터피스"
+                        data-meta="영화 | 액션, SF | 120분 | 15세 이상" data-desc="미친 배기음과 폭발적인 액션의 정수.">
+                        <div class="card rank-card active-landscape active">
+                            <img src="images/b01thumb06_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">뜨거운 아줌마[쑥떡집 그 누나]</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum06.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="자전차왕 엄복동" data-meta="영화 | 시대극, 드라마 | 116분 | 12세 이상"
+                        data-desc="일제강점기 조선 최고의 자전차 선수 엄복동의 가슴 뜨거운 승부.">
+                        <div class="card rank-card">
+                            <img src="images/b01thumb07_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">2월 분열된왕국 아틀란티스 거대한 여정의 판타지 액션대작- 공식자막 5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum07.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="좀비가 되어도 포기할 수 없는"
+                        data-meta="영화 | 공포, 코미디 | 98분 | 15세 이상" data-desc="좀비 사태 속 최후의 생존자들의 유쾌한 사투.">
+                        <div class="card rank-card">
+                            <img src="images/b01thumb08_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">불륜의세계_정식버전_고화질</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum08.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="탑건 매버릭" data-meta="영화 | 액션, 드라마 | 130분 | 12세 이상"
+                        data-desc="최고의 파일럿 매버릭과 새로운 팀원들의 목숨을 건 불가능한 비행.">
+                        <div class="card rank-card">
+                            <img src="images/b01thumb09_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">1월 뤽베쏭 거대한 최신대작 전설의 부활 Dracula 초고화질 BluRay5.1 정상자막</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum09.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="존윅 4 무삭제" data-meta="영화 | 액션, 스릴러 | 169분 | 19세 이상"
+                        data-desc="자유를 위해 모든 것을 건 존 윅의 최후의 전쟁.">
+                        <div class="card rank-card">
+                            <img src="images/b01thumb10_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">N 조나단 밀리터리 액션대작 사상최대의 긴급작전- 공식자막 초고화질</p>
+                            </div>
+                        </div>
+                        <div class="bnum bnum-10"><img src="images/bnum10.png"></div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 3: 최신 화제작 드라마 -->
+        <section class="slider-section">
+            <h2 class="section-title">최신 화제작 드라마</h2>
+            <div class="slider-wrapper">
+                <div class="slider" id="drama-slider">
+                    <!-- Drama 1 Active -->
+                    <div class="card poster-card active-landscape active" tabindex="0" data-title="친밀한리플리"
+                        data-meta="드라마 | 로맨스, 코미디 | 16부작 | 15세 이상"
+                        data-desc="웃음을 경멸하는 남자 구원과 웃어야만 하는 스마일 퀸 천사랑이 킹 호텔에서 벌어지는 좌충우돌 로맨틱 코미디.결혼을 회피하는 여자와 직진하는 남자의 아찔한..">
+                        <img src="images/02thumb01_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/02thumb01_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">친밀한리플리</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="우주를줄게"
+                        data-meta="드라마 | 스릴러, 복수 | 16부작 | 19세 이상"
+                        data-desc="유년 시절 폭력으로 영혼까지 부서진 한 여자가 온 생을 걸어 치밀하게 준비한 처절한 복수와 그 소용돌이에 빠져드는 이들의 이야기.">
+                        <img src="images/02thumb02_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/02thumb02_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">우주를줄게</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="마리와별난아빠들"
+                        data-meta="드라마 | 액션, 히어로 | 20부작 | 15세 이상"
+                        data-desc="초능력을 숨긴 채 현재를 살아가는 아이들과 아픈 비밀을 감춘 채 과거를 살아온 부모들의 이야기를 그린 휴먼 액션 시리즈.">
+                        <img src="images/02thumb03_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/02thumb03_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">마리와별난아빠들</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="첫번째남자"
+                        data-meta="드라마 | 판타지, 액션 | 12부작 | 15세 이상"
+                        data-desc="1938년 혼돈의 시대에 불시착한 구미호 이연이 현대로 돌아가기 위해 펼치는 K-판타지 액션 활극.">
+                        <img src="images/02thumb04_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/02thumb04_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">첫번째남자</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="붉은진주"
+                        data-meta="드라마 | 스릴러, 시대극 | 10부작 | 15세 이상"
+                        data-desc="시대의 어둠이 가장 짙었던 1945년 봄, 생존이 전부였던 두 청춘이 탐욕 위에 탄생한 괴물과 맞서는 스릴러.">
+                        <img src="images/02thumb05_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/02thumb05_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">붉은진주</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Expanded Details below Active item -->
+            <div class="expanded-details active-details">
+                <div class="details-content" id="drama-details">
+                    <p class="meta">드라마 | 로맨스, 코미디 | 16부작 | 15세 이상</p>
+                    <p class="desc">웃음을 경멸하는 남자 구원과 웃어야만 하는 스마일 퀸 천사랑이 킹 호텔에서 벌어지는 좌충우돌 로맨틱 코미디.결혼을 회피하는 여자와 직진하는
+                        남자의 아찔한 이야기!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 4: 드라마 BEST10 -->
+        <section class="slider-section ranking-section">
+            <h2 class="section-title">드라마 BEST10</h2>
+            <div class="slider-wrapper">
+                <div class="slider rank-slider" id="rank-drama-slider">
+
+                    <div class="rank-item" tabindex="0" data-title="나의 아저씨 전편" data-meta="드라마 | 감동, 힐링 | 16부작 | 15세 이상"
+                        data-desc="삶의 무게를 버티며 살아가는 아저씨 삼형제와 거칠게 살아온 한 여성이 서로를 통해 삶을 치유하게 되는 이야기.">
+                        <div class="card rank-card active-landscape active">
+                            <img src="images/b02thumb01_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">N 에반스 초대형 액션작 블록버스터 정말 재밌다 - 공식자막 초고화질</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum01.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="사랑의 불시착" data-meta="드라마 | 로맨스, 코미디 | 16부작 | 15세 이상"
+                        data-desc="어느 날 돌풍과 함께 패러글라이딩 사고로 북한에 불시착한 재벌 상속녀 윤세리와 그녀를 숨기고 지키다 사랑하게 되는 특급 장교 리정혁의 절대 극비 러브스토리.">
+                        <div class="card rank-card">
+                            <img src="images/b02thumb02_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">N 처절한사투 거 대 한 운명에 맞서싸운다 -초고화질 BluRay5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum02.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="스물다섯 스물하나" data-meta="드라마 | 로맨스, 청춘 | 16부작 | 15세 이상"
+                        data-desc="1998년, 시대에게 꿈을 빼앗긴 청춘들의 방황과 성장을 그린 청량로맨스.">
+                        <div class="card rank-card">
+                            <img src="images/b02thumb03_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">[좀비딸] 좀비가 되었어도 포기할 수 없는 내 딸 식자막 초고화질 BluRay5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum03.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="재벌집 막내아들" data-meta="드라마 | 판타지, 복수 | 16부작 | 15세 이상"
+                        data-desc="재벌 총수 일가의 오너리스크를 관리하는 비서가 재벌가의 막내아들로 회귀하여 인생 2회차를 사는 판타지 드라마.">
+                        <div class="card rank-card">
+                            <img src="images/b02thumb04_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">1월NEW 리얼액션 떳다 (( 특 급 수 사 )) 공식자막 초고화질 BluRay5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum04.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="도깨비" data-meta="드라마 | 판타지, 로맨스 | 16부작 | 15세 이상"
+                        data-desc="불멸의 삶을 끝내기 위해 인간 신부가 필요한 도깨비, 그와 기묘한 동거를 시작한 기억상실증 저승사자.">
+                        <div class="card rank-card">
+                            <img src="images/b02thumb05_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">N 초대형 S F 액션대작 (( 정 복 자 들 )) 공식자막 초고화질 FHD 5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum05.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="나의 아저씨 전편" data-meta="드라마 | 감동, 힐링 | 16부작 | 15세 이상"
+                        data-desc="삶의 무게를 버티며 살아가는 아저씨 삼형제와 거칠게 살아온 한 여성이 서로를 통해 삶을 치유하게 되는 이야기.">
+                        <div class="card rank-card active-landscape active">
+                            <img src="images/b02thumb06_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">뜨거운 아줌마[쑥떡집 그 누나]</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum06.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="사랑의 불시착" data-meta="드라마 | 로맨스, 코미디 | 16부작 | 15세 이상"
+                        data-desc="어느 날 돌풍과 함께 패러글라이딩 사고로 북한에 불시착한 재벌 상속녀 윤세리와 그녀를 숨기고 지키다 사랑하게 되는 특급 장교 리정혁의 절대 극비 러브스토리.">
+                        <div class="card rank-card">
+                            <img src="images/b02thumb07_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">2월 분열된왕국 아틀란티스 거대한 여정의 판타지 액션대작- 공식자막 5.1</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum07.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="스물다섯 스물하나" data-meta="드라마 | 로맨스, 청춘 | 16부작 | 15세 이상"
+                        data-desc="1998년, 시대에게 꿈을 빼앗긴 청춘들의 방황과 성장을 그린 청량로맨스.">
+                        <div class="card rank-card">
+                            <img src="images/b02thumb08_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">불륜의세계_정식버전_고화질</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum08.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="재벌집 막내아들" data-meta="드라마 | 판타지, 복수 | 16부작 | 15세 이상"
+                        data-desc="재벌 총수 일가의 오너리스크를 관리하는 비서가 재벌가의 막내아들로 회귀하여 인생 2회차를 사는 판타지 드라마.">
+                        <div class="card rank-card">
+                            <img src="images/b02thumb09_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">1월 뤽베쏭 거대한 최신대작 전설의 부활 Dracula 초고화질 BluRay5.1 정상자막</p>
+                            </div>
+                        </div>
+                        <div class="bnum"><img src="images/bnum09.png"></div>
+                    </div>
+
+                    <div class="rank-item" tabindex="0" data-title="도깨비" data-meta="드라마 | 판타지, 로맨스 | 16부작 | 15세 이상"
+                        data-desc="불멸의 삶을 끝내기 위해 인간 신부가 필요한 도깨비, 그와 기묘한 동거를 시작한 기억상실증 저승사자.">
+                        <div class="card rank-card">
+                            <img src="images/b02thumb010_height.jpg">
+                            <div class="rank-info-overlay">
+                                <p class="rank-subtitle">N 조나단 밀리터리 액션대작 사상최대의 긴급작전- 공식자막 초고화질</p>
+                            </div>
+                        </div>
+                        <div class="bnum bnum-10"><img src="images/bnum10.png"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 5: 몰아 보기 예능 -->
+        <section class="slider-section last-section">
+            <h2 class="section-title">몰아 보기 예능</h2>
+            <div class="slider-wrapper">
+                <div class="slider" id="variety-slider">
+                    <div class="card poster-card active-landscape active" tabindex="0" data-title="구해줘홈즈"
+                        data-meta="예능 | 리얼리티 | 100분 | 15세 이상"
+                        data-desc="바쁜 현대인들의 집 찾기를 위해 직접 나선 스타들! 그들의 리얼한 발품 중개 배틀.">
+                        <img src="images/03thumb01_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/03thumb01_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">구해줘홈즈</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="사랑은 계속된다"
+                        data-meta="예능 | 짝짓기, 리얼리티 | 90분 | 15세 이상"
+                        data-desc="'나는 SOLO' 화제의 출연자들이 방송 이후 어떤 만남을 갖고 있는지 그들의 찐 일상을 담은 스핀오프.">
+                        <img src="images/03thumb02_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/03thumb02_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">사랑은 계속된다</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="꼬리에꼬리를무는그날이야기"
+                        data-meta="예능 | 교양, 토크 | 90분 | 15세 이상"
+                        data-desc="세 친구가 누군가에게 꼭 들려주고 싶은 '그날'의 이야기를 꼬리에 꼬리를 물고 전하는 이야기 타임.">
+                        <img src="images/03thumb03_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/03thumb03_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">꼬리에꼬리를무는그날이야기</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="이혼숙려" data-meta="예능 | 리얼리티 | 90분 | 15세 이상"
+                        data-desc="이혼 위기의 부부들이 합숙 캠프를 통해 서로를 돌아보고 관계 회복을 모색하는 리얼리티 프로그램.">
+                        <img src="images/03thumb04_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/03thumb04_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">이혼숙려</span>
+                    </div>
+                    <div class="card poster-card" tabindex="0" data-title="셰프와사냥꾼"
+                        data-meta="예능 | 서바이벌, 요리 | 90분 | 15세 이상"
+                        data-desc="최고의 요리사들이 명예를 걸고 치열한 대결을 펼쳐 최강자를 가리는 서바이벌 요리 경연.">
+                        <img src="images/03thumb05_height.jpg" class="img-portrait" alt="추천영화 1 세로">
+                        <img src="images/03thumb05_width.jpg" class="img-landscape" alt="추천영화 1 가로">
+                        <span class="card-title-overlay">셰프와사냥꾼</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Expanded Details below Active item -->
+            <div class="expanded-details active-details">
+                <div class="details-content" id="variety-details">
+                    <p class="meta">예능 | 리얼리티 | 100분 | 15세 이상</p>
+                    <p class="desc">바쁜 현대인들의 집 찾기를 위해 직접 나선 스타들! 그들의 리얼한 발품 중개 배틀.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="height: 100px;"></footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
