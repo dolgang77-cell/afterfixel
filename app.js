@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="popup-hero">
                 <div class="popup-hd">HD</div>
                 <video id="popup-video" autoplay muted loop playsinline
-                    src="https://cdnbigfilepreview.flexcloud.co.kr/preview/mp4_dna_sd/e92b/e92b4c36aaf386ba3f1bb164f12f8c8b_750401589.mp4?ucode=28781566&st=5Tyk2OwNYBSnWYJRawm9lg&e=1772182463"
+                    src="https://cdnbigfilepreview.flexcloud.co.kr/preview/mp4_dna_sd/e92b/e92b4c36aaf386ba3f1bb164f12f8c8b_750401589.mp4?ucode=28781566&st=X4UJ3t1cE4lv8eWnFtcg5A&e=1772183930"
                     style="width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block;">
                 </video>
                 <div class="popup-hero-overlay">
