@@ -1,4 +1,96 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Add Movie Popup HTML dynamically
+    const popupOverlay = document.createElement('div');
+    popupOverlay.className = 'movie-popup-overlay';
+    popupOverlay.innerHTML = `
+        <div class="movie-popup-content movie-popup-v2">
+            <div class="popup-hero">
+                <div class="popup-hd">HD</div>
+                <video id="popup-video" autoplay muted loop playsinline
+                    src="https://cdnbigfilepreview.flexcloud.co.kr/preview/mp4_dna_sd/e92b/e92b4c36aaf386ba3f1bb164f12f8c8b_750401589.mp4?ucode=28781566&st=5Tyk2OwNYBSnWYJRawm9lg&e=1772182463"
+                    style="width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block;">
+                </video>
+                <div class="popup-hero-overlay">
+                    <div class="popup-hero-title" id="popup-title"></div>
+                    <button class="popup-play-btn"><i class="fa-solid fa-play"></i> 재생</button>
+                </div>
+            </div>
+            <div class="popup-body">
+                <div class="popup-meta" id="popup-meta"></div>
+                <div class="popup-episodes">
+                    <h3 class="episodes-title">에피소드 보기</h3>
+                    <ul class="episode-list">
+                        <li class="episode-item">
+                            <span class="ep-name" id="popup-ep1"></span>
+                            <button class="ep-play-btn"><i class="fa-solid fa-play"></i> 재생</button>
+                        </li>
+                        <li class="episode-item">
+                            <span class="ep-name" id="popup-ep2"></span>
+                            <button class="ep-play-btn"><i class="fa-solid fa-play"></i> 재생</button>
+                        </li>
+                        <li class="episode-item">
+                            <span class="ep-name" id="popup-ep3"></span>
+                            <button class="ep-play-btn"><i class="fa-solid fa-play"></i> 재생</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(popupOverlay);
+
+    const popupVideo = popupOverlay.querySelector('#popup-video');
+
+    function closeMoviePopup() {
+        popupOverlay.classList.remove('active');
+        if (popupVideo) { popupVideo.pause(); popupVideo.currentTime = 0; }
+        if (popupOverlay.activeCard) {
+            popupOverlay.activeCard.focus();
+        }
+    }
+
+    const popupCloseBtn = popupOverlay.querySelector('.popup-close');
+    if (popupCloseBtn) popupCloseBtn.addEventListener('click', closeMoviePopup);
+    popupOverlay.addEventListener('click', (e) => {
+        if (e.target === popupOverlay) closeMoviePopup();
+    });
+
+    window.openMoviePopup = function (card) {
+        const title = card.getAttribute('data-title') || '';
+        const meta = card.getAttribute('data-meta') || '';
+        const desc = card.getAttribute('data-desc') || '';
+        // Use the card's thumbnail src as video poster
+        const img = card.querySelector('img');
+        const imgSrc = img ? img.src : '';
+
+        // Show title if available, otherwise use desc as fallback title
+        const displayTitle = title || desc.split('.')[0] || meta;
+        document.getElementById('popup-title').innerText = displayTitle;
+        document.getElementById('popup-meta').innerText = meta;
+        // Seed episodes with a filename derived from meta (placeholder)
+        const epName = meta ? meta.replace(/\|/g, '.').replace(/\s+/g, '').substring(0, 30) + '.720p.mp4' : '파일명.720p.mp4';
+        ['popup-ep1', 'popup-ep2', 'popup-ep3'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = epName;
+        });
+
+        if (popupVideo) {
+            popupVideo.poster = imgSrc;
+            popupVideo.play().catch(() => { }); // Autoplay
+        }
+
+        popupOverlay.classList.add('active');
+        popupOverlay.activeCard = card;
+    };
+
+    // Click handler for movie-card items in movie.html
+    document.addEventListener('click', (e) => {
+        const card = e.target.closest('.card.movie-card');
+        if (card && typeof openMoviePopup === 'function') {
+            openMoviePopup(card);
+        }
+    });
+
     // Header background change on scroll
     const header = document.getElementById('header');
 
@@ -15,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addFocusable.forEach(el => el.setAttribute('tabindex', '0'));
 
     // Add universal click interaction for cards across all sliders
-    const allClickableCards = document.querySelectorAll('.slider-section .poster-card, .slider-section .rank-item, .slider-section .landscape-card');
+    const allClickableCards = document.querySelectorAll('.slider-section .poster-card, .movie-card, .movie-card, .slider-section .rank-item, .slider-section .landscape-card');
 
     allClickableCards.forEach(card => {
         card.addEventListener('click', function () {
@@ -48,7 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         card.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
-                this.click();
+                if (this.classList.contains('active') || false) {
+                    if (typeof openMoviePopup === 'function') openMoviePopup(this);
+                } else {
+                    this.click();
+                }
             }
         });
     });
@@ -59,20 +155,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const newActive = slider.querySelector('.active-landscape') || slider.querySelector('.active');
         if (!newActive) return;
 
-        const allCardsCurrent = Array.from(slider.querySelectorAll('.poster-card, .landscape-card, .rank-card'));
+        const allCardsCurrent = Array.from(slider.querySelectorAll('.poster-card, .movie-card, .movie-card, .landscape-card, .rank-card'));
         const currentIndex = allCardsCurrent.indexOf(newActive) + 1;
 
         const section = slider.closest('.slider-section');
         if (section) {
             const detailsContainer = section.querySelector('.details-content');
             if (detailsContainer) {
-                const title = newActive.getAttribute('data-title');
+
                 const meta = newActive.getAttribute('data-meta');
                 const desc = newActive.getAttribute('data-desc');
 
 
 
-                if (title && meta && desc) {
+                if (meta && desc) {
                     detailsContainer.innerHTML = `
                         <p class="meta">${meta}</p>
                         <p class="desc">${desc}</p>
@@ -83,6 +179,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.addEventListener('keydown', (e) => {
+        const popupEl = document.querySelector('.movie-popup-overlay');
+        if (popupEl && popupEl.classList.contains('active')) {
+            // Backspace / Escape: close popup
+            if (e.key === 'Escape' || e.key === 'Backspace') {
+                e.preventDefault();
+                closeMoviePopup();
+                return;
+            }
+            // Arrow keys: navigate between play buttons only
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                const btns = Array.from(popupEl.querySelectorAll('.popup-play-btn, .ep-play-btn'));
+                if (btns.length === 0) return;
+                const focused = document.activeElement;
+                const idx = btns.indexOf(focused);
+                if (e.key === 'ArrowDown') {
+                    const next = idx + 1 < btns.length ? btns[idx + 1] : btns[0];
+                    next.focus();
+                } else {
+                    const prev = idx - 1 >= 0 ? btns[idx - 1] : btns[btns.length - 1];
+                    prev.focus();
+                }
+                return;
+            }
+            // Block all other arrow keys from affecting the page behind
+            if (['ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+                e.preventDefault();
+                return;
+            }
+        }
+
         const key = e.key;
         if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
 
@@ -160,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Strip all active classes before assigning
                             const allCards = Array.from(slider.querySelectorAll('.card'));
                             allCards.forEach(card => {
-                                card.classList.remove('active-landscape', 'active');
+                                card.classList.remove('active');
                                 card.removeAttribute('tabindex');
                             });
 
@@ -176,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             // 3. Expand the next card synchronously
                             if (nextCard) {
-                                nextCard.classList.add('active-landscape', 'active');
+                                nextCard.classList.add('active');
                             }
 
                             setTimeout(() => {
@@ -212,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             // 2. Strip all active classes
                             const allCards = Array.from(slider.querySelectorAll('.card'));
                             allCards.forEach(card => {
-                                card.classList.remove('active-landscape', 'active');
+                                card.classList.remove('active');
                                 card.removeAttribute('tabindex');
                             });
 
@@ -232,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             // 5. Expand the target synchronously so it flawlessly matches the slide easing
                             if (lastCard) {
-                                lastCard.classList.add('active-landscape', 'active');
+                                lastCard.classList.add('active');
                             }
 
                             setTimeout(() => {
@@ -266,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Strip active classes from everything in this slider
                             const allCards = Array.from(slider.querySelectorAll('.card'));
                             allCards.forEach(card => {
-                                card.classList.remove('active-landscape', 'active');
+                                card.classList.remove('active');
                                 card.removeAttribute('tabindex');
                             });
 
@@ -316,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // For DOM shuffle sliders: clone all original cards once as right-edge buffer
         // This prevents the seam gap during the 500ms animation before a card is re-appended
-        const isDOMShuffleSlider = ['movie-slider', 'drama-slider', 'variety-slider', 'rank-movie-slider', 'rank-drama-slider'].includes(slider.id);
+        const isDOMShuffleSlider = ['movie-slider', 'drama-slider', 'variety-slider', 'rank-movie-slider', 'rank-drama-slider'].includes(slider.id) || slider.classList.contains('shuffle-slider');
         if (isDOMShuffleSlider) {
             // Clip cards that slide off the edge
             const wrapper = slider.closest('.slider-wrapper');
@@ -327,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const clone = child.cloneNode(true);
                 const cloneCard = clone.classList.contains('card') ? clone : clone.querySelector('.card');
                 if (cloneCard) {
-                    cloneCard.classList.remove('active-landscape', 'active');
+                    cloneCard.classList.remove('active');
                     cloneCard.removeAttribute('tabindex');
                 }
                 slider.appendChild(clone);
@@ -340,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
             children.forEach(child => {
                 const card = child.classList.contains('card') ? child : child.querySelector('.card');
                 if (card) {
-                    card.classList.remove('active-landscape', 'active');
+                    card.classList.remove('active');
                     card.removeAttribute('tabindex');
                 }
             });
@@ -348,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (firstCard) {
                 firstCard.classList.add('active');
                 if (isDOMShuffleSlider) {
-                    firstCard.classList.add('active-landscape');
+                    firstCard.classList.add('active');
                 }
                 firstCard.setAttribute('tabindex', '0');
             }
@@ -366,7 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Temporarily focus slider's card to fulfill matching requirements
-            const target = slider.querySelector('.active-landscape, .card');
+            const target = slider.querySelector('.card.active, .card');
             if (target && target !== document.activeElement) target.focus({ preventScroll: true });
             document.dispatchEvent(simulatedEvent);
         }, { passive: false });

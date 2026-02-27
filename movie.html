@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigTV</title>
+    <!-- Fonts and Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="header" id="header">
+        <div class="header-left">
+            <div class="logo">
+                <span class="logo-text green"><img src="images/nlogo_bigfile.png"
+                        style="padding: 15px 0 0 0; width: 110px;"></span>
+            </div>
+            <nav class="nav-menu">
+                <button class="icon-btn search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <a href="index.html">홈</a>
+                <a href="movie.html" class="active">영화</a>
+                <a href="#">드라마</a>
+                <a href="#" class="badge-item">성인 <img src="images/mn_19_ico.png"
+                        style="padding: 3px 0 0 0; width: 22px;"></a>
+            </nav>
+        </div>
+    </header>
+
+    <main style="padding-top: 100px;">
+
+        <!-- Content Row 2: 고화질 -->
+        <section class="slider-section">
+            <h2 class="section-title">고화질</h2>
+            <div class="slider-wrapper">
+                <div class="slider shuffle-slider" id="movie-slider">
+                    <!-- Movie 1 Active -->
+
+                    <div class="card movie-card active" tabindex="0" data-title=""
+                        data-meta="영화 | 액션, 범죄 | 112분 | 12세 이상"
+                        data-desc="나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260128/202601282205180_48261.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 스릴러 | 124분 | 15세 이상"
+                        data-desc="사막 한가운데서 벌어지는 숨 막히는 구출 작전.두 용병의 예측 불허 콤비 플레이!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20251119/202511192338470_96639.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | SF, 액션 | 120분 | 15세 이상"
+                        data-desc="희망 없는 세상, 미친 자들만이 살아남는다.디스토피아를 질주하는 미친 액션 쾌감!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20160701/201607010058350_33599.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 첩보 | 147분 | 15세 이상"
+                        data-desc="불가능한 미션, 피할 수 없는 선택.전 세계를 구하기 위한 에단 헌트의 짜릿한 액션!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20251009/202510091105140_81591.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 마블 | 181분 | 12세 이상"
+                        data-desc="모든 것을 걸었다. 타노스에 맞서는 최후의 전투.마블 시네마틱 유니버스의 화려한 피날레.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20111005/0020111005231753.jpg" alt="">
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- Expanded Details below Active item -->
+            <div class="expanded-details active-details">
+                <div class="details-content" id="movie-details">
+                    <p class="meta">영화 | 액션, 범죄 | 112분 | 12세 이상</p>
+                    <p class="desc">나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 3: 최신/미개봉 -->
+        <section class="slider-section">
+            <h2 class="section-title">최신/미개봉</h2>
+            <div class="slider-wrapper">
+                <div class="slider shuffle-slider" id="movie-slider">
+                    <!-- Movie 1 Active -->
+                    <div class="card movie-card active" tabindex="0" data-title=""
+                        data-meta="영화 | 액션, 범죄 | 112분 | 12세 이상"
+                        data-desc="나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260203/202602032217400_88177.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 스릴러 | 124분 | 15세 이상"
+                        data-desc="사막 한가운데서 벌어지는 숨 막히는 구출 작전.두 용병의 예측 불허 콤비 플레이!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260221/202602211716340_46556.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | SF, 액션 | 120분 | 15세 이상"
+                        data-desc="희망 없는 세상, 미친 자들만이 살아남는다.디스토피아를 질주하는 미친 액션 쾌감!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260225/202602251938340_41990.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 첩보 | 147분 | 15세 이상"
+                        data-desc="불가능한 미션, 피할 수 없는 선택.전 세계를 구하기 위한 에단 헌트의 짜릿한 액션!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260128/202601282113400_32076.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 마블 | 181분 | 12세 이상"
+                        data-desc="모든 것을 걸었다. 타노스에 맞서는 최후의 전투.마블 시네마틱 유니버스의 화려한 피날레.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20251229/202512291552370_27003.jpg" alt="">
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- Expanded Details below Active item -->
+            <div class="expanded-details active-details">
+                <div class="details-content" id="movie-details">
+                    <p class="meta">영화 | 액션, 범죄 | 112분 | 12세 이상</p>
+                    <p class="desc">나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 4: 한국영화 -->
+        <section class="slider-section">
+            <h2 class="section-title">한국영화</h2>
+            <div class="slider-wrapper">
+                <div class="slider shuffle-slider" id="movie-slider">
+                    <!-- Movie 1 Active -->
+                    <div class="card movie-card active" tabindex="0" data-title=""
+                        data-meta="영화 | 액션, 범죄 | 112분 | 12세 이상"
+                        data-desc="나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260226/202602261034160_75976.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 스릴러 | 124분 | 15세 이상"
+                        data-desc="사막 한가운데서 벌어지는 숨 막히는 구출 작전.두 용병의 예측 불허 콤비 플레이!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260226/202602261034170_46470.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | SF, 액션 | 120분 | 15세 이상"
+                        data-desc="희망 없는 세상, 미친 자들만이 살아남는다.디스토피아를 질주하는 미친 액션 쾌감!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260226/202602261034130_24140.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 첩보 | 147분 | 15세 이상"
+                        data-desc="불가능한 미션, 피할 수 없는 선택.전 세계를 구하기 위한 에단 헌트의 짜릿한 액션!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260226/202602261034000_53596.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 마블 | 181분 | 12세 이상"
+                        data-desc="모든 것을 걸었다. 타노스에 맞서는 최후의 전투.마블 시네마틱 유니버스의 화려한 피날레.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260226/202602261033540_17666.jpg" alt="">
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- Expanded Details below Active item -->
+            <div class="expanded-details active-details">
+                <div class="details-content" id="movie-details">
+                    <p class="meta">영화 | 액션, 범죄 | 112분 | 12세 이상</p>
+                    <p class="desc">나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 5: 액션 -->
+        <section class="slider-section">
+            <h2 class="section-title">액션</h2>
+            <div class="slider-wrapper">
+                <div class="slider shuffle-slider" id="movie-slider">
+                    <!-- Movie 1 Active -->
+                    <div class="card movie-card active" tabindex="0" data-title=""
+                        data-meta="영화 | 액션, 범죄 | 112분 | 12세 이상"
+                        data-desc="나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260223/202602230742510_46923.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 스릴러 | 124분 | 15세 이상"
+                        data-desc="사막 한가운데서 벌어지는 숨 막히는 구출 작전.두 용병의 예측 불허 콤비 플레이!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260220/202602201501390_22690.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | SF, 액션 | 120분 | 15세 이상"
+                        data-desc="희망 없는 세상, 미친 자들만이 살아남는다.디스토피아를 질주하는 미친 액션 쾌감!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260220/202602201458220_83784.png" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 첩보 | 147분 | 15세 이상"
+                        data-desc="불가능한 미션, 피할 수 없는 선택.전 세계를 구하기 위한 에단 헌트의 짜릿한 액션!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260227/202602270329560_49540.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 마블 | 181분 | 12세 이상"
+                        data-desc="모든 것을 걸었다. 타노스에 맞서는 최후의 전투.마블 시네마틱 유니버스의 화려한 피날레.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260218/202602181847010_72241.jpg" alt="">
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- Expanded Details below Active item -->
+            <div class="expanded-details active-details">
+                <div class="details-content" id="movie-details">
+                    <p class="meta">영화 | 액션, 범죄 | 112분 | 12세 이상</p>
+                    <p class="desc">나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 6: SF/판타지 -->
+        <section class="slider-section">
+            <h2 class="section-title">SF/판타지</h2>
+            <div class="slider-wrapper">
+                <div class="slider shuffle-slider" id="movie-slider">
+                    <!-- Movie 1 Active -->
+                    <div class="card movie-card active" tabindex="0" data-title=""
+                        data-meta="영화 | 액션, 범죄 | 112분 | 12세 이상"
+                        data-desc="나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260227/202602271354220_32687.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 스릴러 | 124분 | 15세 이상"
+                        data-desc="사막 한가운데서 벌어지는 숨 막히는 구출 작전.두 용병의 예측 불허 콤비 플레이!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260222/202602220205590_11927.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | SF, 액션 | 120분 | 15세 이상"
+                        data-desc="희망 없는 세상, 미친 자들만이 살아남는다.디스토피아를 질주하는 미친 액션 쾌감!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260219/202602191825340_64399.png" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 첩보 | 147분 | 15세 이상"
+                        data-desc="불가능한 미션, 피할 수 없는 선택.전 세계를 구하기 위한 에단 헌트의 짜릿한 액션!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20190808/201908081917260_68164.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 마블 | 181분 | 12세 이상"
+                        data-desc="모든 것을 걸었다. 타노스에 맞서는 최후의 전투.마블 시네마틱 유니버스의 화려한 피날레.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260213/202602132333281_30911.jpg" alt="">
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- Expanded Details below Active item -->
+            <div class="expanded-details active-details">
+                <div class="details-content" id="movie-details">
+                    <p class="meta">영화 | 액션, 범죄 | 112분 | 12세 이상</p>
+                    <p class="desc">나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Row 7: 공포/스릴러 -->
+        <section class="slider-section last-section">
+            <h2 class="section-title">공포/스릴러</h2>
+            <div class="slider-wrapper">
+                <div class="slider shuffle-slider" id="movie-slider">
+                    <!-- Movie 1 Active -->
+                    <div class="card movie-card active" tabindex="0" data-title=""
+                        data-meta="영화 | 액션, 범죄 | 112분 | 12세 이상"
+                        data-desc="나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260220/202602201424580_78129.png" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 스릴러 | 124분 | 15세 이상"
+                        data-desc="사막 한가운데서 벌어지는 숨 막히는 구출 작전.두 용병의 예측 불허 콤비 플레이!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260227/202602270331460_37400.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | SF, 액션 | 120분 | 15세 이상"
+                        data-desc="희망 없는 세상, 미친 자들만이 살아남는다.디스토피아를 질주하는 미친 액션 쾌감!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260227/202602270330140_76179.jpg" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 첩보 | 147분 | 15세 이상"
+                        data-desc="불가능한 미션, 피할 수 피하는 선택.전 세계를 구하기 위한 에단 헌트의 짜릿한 액션!">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260222/202602222339550_56689.png" alt="">
+
+
+                    </div>
+                    <div class="card movie-card" tabindex="0" data-title="" data-meta="영화 | 액션, 마블 | 181분 | 12세 이상"
+                        data-desc="모든 것을 걸었다. 타노스에 맞서는 최후의 전투.마블 시네마틱 유니버스의 화려한 피날레.">
+                        <img src="https://img.bigfile.pe.kr//conts_images2/20260213/202602130742120_56876.jpg" alt="">
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- Expanded Details below Active item -->
+            <div class="expanded-details active-details">
+                <div class="details-content" id="movie-details">
+                    <p class="meta">영화 | 액션, 범죄 | 112분 | 12세 이상</p>
+                    <p class="desc">나쁜 놈 잡는 데는 수단, 방법, 물불 안 가린다! 짜릿하고 통쾌한 액션 수사극.강력반 형사들의 범죄 소탕 극락 액션.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="height: 100px;"></footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
