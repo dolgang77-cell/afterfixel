@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BigTV</title>
+    <script>history.scrollRestoration = "manual"; window.scrollTo(0, 0);</script>
     <!-- Fonts and Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,16 +20,15 @@
     <header class="header" id="header">
         <div class="header-left">
             <div class="logo">
-                <span class="logo-text green"><img src="images/nlogo_bigfile.png"
-                        style="padding: 15px 0 0 0; width: 110px;"></span>
+                <span class="logo-text green"><img src="images/nlogo_bigfile.png" class="logo-img-main"></span>
             </div>
             <nav class="nav-menu">
                 <button class="icon-btn search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-                <a href="index.html">홈</a>
-                <a href="movie.html">영화</a>
-                <a href="#">드라마</a>
-                <a href="#" class="badge-item">성인 <img src="images/mn_19_ico.png"
-                        style="padding: 3px 0 0 0; width: 22px;"></a>
+                <a href="index.html" class="active">홈</a>
+                <a href="movie.html#header">영화</a>
+                <a href="drama.html#header">드라마</a>
+                <a href="cert.html#header" class="badge-item">성인 <img src="images/mn_19_ico.png"
+                        class="badge-19-img"></a>
             </nav>
         </div>
     </header>
@@ -46,7 +46,7 @@
                 </h1>
                 <div class="hero-actions">
                     <button class="btn btn-play"><i class="fa-solid fa-play"></i> 재생</button>
-                    <button class="btn btn-info"><img src="images/vod_info_ico.png" style="width: 40px;"> 에피소드
+                    <button class="btn btn-info"><img src="images/vod_info_ico.png" class="btn-info-img"> 에피소드
                         보기</button>
                 </div>
             </div>

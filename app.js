@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="popup-hero">
                 <div class="popup-hd">HD</div>
                 <video id="popup-video" autoplay muted loop playsinline
-                    src="https://cdnbigfilepreview.flexcloud.co.kr/preview/mp4_dna_sd/e92b/e92b4c36aaf386ba3f1bb164f12f8c8b_750401589.mp4?ucode=28781566&st=X4UJ3t1cE4lv8eWnFtcg5A&e=1772183930"
+                    src="https://cdnbigfilepreview.flexcloud.co.kr/preview/mp4_dna_sd/5732/5732e9dbee1479d8fa316327f85e8958_486598833.mp4?ucode=28781566&st=8JsNGffLy5yv2FbPZLRWlg&e=1772496601"
                     style="width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block;">
                 </video>
                 <div class="popup-hero-overlay">
@@ -55,6 +55,40 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === popupOverlay) closeMoviePopup();
     });
 
+    // Search Button Navigation
+    const searchBtns = document.querySelectorAll('.search-btn');
+    searchBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            window.location.href = 'surch.html';
+        });
+        btn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                window.location.href = 'surch.html';
+            }
+        });
+    });
+
+    // Make sure movie.html starts at the very top by default
+    // Make sure movie.html starts at the very top by default
+    if (window.location.pathname.includes('movie.html') || window.location.pathname.includes('drama.html')) {
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // Brute force scroll lock for the first 500ms to defeat Chrome/Edge F5 scroll memory
+        let scrollLockUntil = performance.now() + 500;
+        function forceTopScroll() {
+            window.scrollTo(0, 0);
+            if (performance.now() < scrollLockUntil) {
+                requestAnimationFrame(forceTopScroll);
+            } else {
+                const activeNav = document.querySelector('.nav-menu a.active');
+                if (activeNav) activeNav.focus({ preventScroll: true });
+            }
+        }
+        forceTopScroll();
+    }
+
     window.openMoviePopup = function (card) {
         const title = card.getAttribute('data-title') || '';
         const meta = card.getAttribute('data-meta') || '';
@@ -83,11 +117,52 @@ document.addEventListener('DOMContentLoaded', () => {
         popupOverlay.activeCard = card;
     };
 
-    // Click handler for movie-card items in movie.html
+    // Click handler for movie-card items and movie BEST10 navigation
+    // Only fires if the card was ALREADY active (stopPropagation blocks non-active cards)
     document.addEventListener('click', (e) => {
-        const card = e.target.closest('.card.movie-card');
-        if (card && typeof openMoviePopup === 'function') {
-            openMoviePopup(card);
+        // 1. Handle movie and drama BEST10 navigation
+        const rankCardMovie = e.target.closest('#rank-movie-slider .card');
+        if (rankCardMovie && rankCardMovie.classList.contains('active')) {
+            window.location.href = 'movie.html#header';
+            return;
+        }
+
+        const rankCardDrama = e.target.closest('#rank-drama-slider .card');
+        if (rankCardDrama && rankCardDrama.classList.contains('active')) {
+            window.location.href = 'drama.html#header';
+            return;
+        }
+
+        // 2. Handle regular movie cards opening the popup
+        const movieCard = e.target.closest('.card.movie-card');
+        if (movieCard && movieCard.classList.contains('active') && typeof openMoviePopup === 'function') {
+            openMoviePopup(movieCard);
+            return;
+        }
+
+        // 3. Handle Hero section '에피소드 보기' (btn-info) opening the popup
+        const heroInfoBtn = e.target.closest('.hero-actions .btn-info');
+        if (heroInfoBtn && typeof openMoviePopup === 'function') {
+            const heroSection = heroInfoBtn.closest('.hero');
+            const heroTitleEl = heroSection ? heroSection.querySelector('.hero-title') : null;
+            const heroImgEl = heroSection ? heroSection.querySelector('.hero-img') : null;
+
+            // Create a pseudo-card element to feed into openMoviePopup
+            const pseudoCard = document.createElement('div');
+            // Clean up the title text slightly (remove the 'N' badge text)
+            let titleText = heroTitleEl ? heroTitleEl.innerText.replace(/N\s*/, '').trim() : '추천 콘텐츠';
+
+            pseudoCard.setAttribute('data-title', titleText);
+            pseudoCard.setAttribute('data-meta', '에피소드 | 초고화질');
+            pseudoCard.setAttribute('data-desc', titleText);
+
+            if (heroImgEl) {
+                const img = document.createElement('img');
+                img.src = heroImgEl.src;
+                pseudoCard.appendChild(img);
+            }
+
+            openMoviePopup(pseudoCard);
         }
     });
 
@@ -110,7 +185,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const allClickableCards = document.querySelectorAll('.slider-section .poster-card, .movie-card, .movie-card, .slider-section .rank-item, .slider-section .landscape-card');
 
     allClickableCards.forEach(card => {
-        card.addEventListener('click', function () {
+        card.addEventListener('click', function (e) {
+            // If card was NOT already active, stop propagation to prevent popup from opening
+            const wasActive = this.classList.contains('active');
+            if (!wasActive) e.stopPropagation();
+
             // Focus visually integrates with memory logic
             this.focus();
 
@@ -140,8 +219,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         card.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
-                if (this.classList.contains('active') || false) {
-                    if (typeof openMoviePopup === 'function') openMoviePopup(this);
+                const isActive = this.classList.contains('active') || (this.querySelector('.card') && this.querySelector('.card').classList.contains('active'));
+
+                if (isActive) {
+                    if (this.closest('#rank-movie-slider')) {
+                        window.location.href = 'movie.html#header';
+                    } else if (this.closest('#rank-drama-slider')) {
+                        window.location.href = 'drama.html#header';
+                    } else if (typeof openMoviePopup === 'function') {
+                        openMoviePopup(this);
+                    }
                 } else {
                     this.click();
                 }
@@ -232,14 +319,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentRowIndex !== -1) {
             // Up / Down Navigation
             if (key === 'ArrowUp') {
-                if (currentRowIndex > 0) {
-                    const prevContainer = rowContainers[currentRowIndex - 1];
+                for (let i = currentRowIndex - 1; i >= 0; i--) {
+                    const prevContainer = rowContainers[i];
                     let target = null;
-                    // Special rule: if moving up from play button to header, jump to the active Home link first
-                    if (currentRowIndex === 1 && prevContainer.classList.contains('header')) {
+
+                    // Special rule: if moving up to header, jump to the active Home link first
+                    if (prevContainer.classList.contains('header')) {
                         target = prevContainer.querySelector('.nav-menu a.active') || prevContainer.querySelector('a[href]');
                     }
-                    if (!target) target = prevContainer.querySelector('[tabindex="0"]') || prevContainer.querySelector('a[href], button');
+                    if (!target) target = prevContainer.querySelector('[tabindex="0"], a[href], button');
 
                     if (target) {
                         target.focus({ preventScroll: true });
@@ -249,16 +337,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Scroll section so title is visible below fixed header
                             prevContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }
+                        break;
                     }
                 }
             } else if (key === 'ArrowDown') {
-                if (currentRowIndex < rowContainers.length - 1) {
-                    const nextContainer = rowContainers[currentRowIndex + 1];
-                    const target = nextContainer.querySelector('[tabindex="0"]') || nextContainer.querySelector('a[href], button');
+                for (let i = currentRowIndex + 1; i < rowContainers.length; i++) {
+                    const nextContainer = rowContainers[i];
+                    const target = nextContainer.querySelector('[tabindex="0"], a[href], button');
+
                     if (target) {
                         target.focus({ preventScroll: true });
                         // Scroll section so title appears below fixed header
                         nextContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        break;
                     }
                 }
             }

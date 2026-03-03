@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigTV - 성인 인증</title>
+    <script>history.scrollRestoration = "manual"; window.scrollTo(0, 0);</script>
+    <!-- Fonts and Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="header" id="header">
+        <div class="header-left">
+            <div class="logo">
+                <span class="logo-text green"><img src="images/nlogo_bigfile.png" class="logo-img-main"></span>
+            </div>
+            <nav class="nav-menu">
+                <button class="icon-btn search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <a href="index.html">홈</a>
+                <a href="movie.html#header">영화</a>
+                <a href="drama.html#header">드라마</a>
+                <a href="cert.html#header" class="badge-item active">성인 <img src="images/mn_19_ico.png"
+                        class="badge-19-img"></a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="cert-main">
+        <div class="cert-container">
+            <h1 class="cert-title">
+                <img src="images/mn_19_ico.png" alt="19"> 성인 인증이 필요한 콘텐츠입니다
+            </h1>
+            <p class="cert-subtitle">본 콘텐츠는 만 19세 이상만 이용할 수 있습니다.</p>
+
+            <div class="qr-box">
+                <p class="qr-label">QR인증</p>
+                <div class="qr-img-wrapper">
+                    <!-- User-provided QR code -->
+                    <img src="images/qr_code.jpg" alt="QR Code" class="qr-image">
+                </div>
+                <p class="qr-steps">QR코드 스캔 > 간편인증 > 성인인증완료</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        // Redirect to adult.html after 2 seconds (2000 ms)
+        setTimeout(() => {
+            window.location.href = 'adult.html';
+        }, 2000);
+    </script>
+</body>
+
+</html>

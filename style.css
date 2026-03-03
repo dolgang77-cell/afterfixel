@@ -62,6 +62,7 @@ body {
 .nav-menu {
     display: flex;
     gap: 24px;
+    align-items: center;
 }
 
 .nav-menu a {
@@ -71,6 +72,8 @@ body {
     font-size: 20px;
     font-weight: 500;
     transition: color 0.2s;
+    display: flex;
+    align-items: center;
 }
 
 .nav-menu a:hover,
@@ -266,6 +269,12 @@ body {
     transition: all 0.5s ease-in-out;
     border: 3px solid transparent;
     flex: 0 0 auto;
+}
+
+/* non-active movie-card: disable all pointer interaction */
+.card.movie-card:not(.active) {
+    pointer-events: none;
+    cursor: default;
 }
 
 .poster-card {
@@ -688,7 +697,7 @@ button:focus-visible,
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: row;
-    gap: 30px;
+    gap: 10px;
     color: white;
     overflow-y: auto;
     transform: translateY(30px);
@@ -875,7 +884,7 @@ button:focus-visible,
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 0;
+    padding: 5px 0;
     border-bottom: 1px solid #eee;
 }
 
@@ -946,6 +955,395 @@ button:focus-visible,
     object-fit: cover;
     object-position: 100% 0%;
 }
+
+/* Search Page Specific Styles */
+body {
+    background-color: #000;
 }
 
-;
+.search-container {
+    display: flex;
+    padding-top: 100px;
+    height: 100vh;
+    overflow: hidden;
+    padding-left: 4%;
+}
+
+/* Left Sidebar: Keyboard and History */
+.search-sidebar {
+    width: 420px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding-right: 30px;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+.search-sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Input Area at the top of keyboard */
+.keyboard-input-area {
+    display: flex;
+    background: #222;
+    padding: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 4px;
+}
+
+.keyboard-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    font-weight: normal;
+    outline: none;
+    width: 60%;
+}
+
+.keyboard-area-top {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.kb-control-btn {
+    background: #1a1a1a;
+    border: none;
+    color: #ccc;
+    height: 57px;
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: normal;
+}
+
+.kb-control-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+/* Focus styles for keyboard buttons and history items */
+.keyboard-grid button:focus,
+.history-item:focus,
+.history-item.active:focus {
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+    background: #fff;
+    color: #000;
+}
+
+.kb-control-btn:focus {
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+    box-shadow: none;
+}
+
+/* Keyboard Grid */
+.keyboard-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-bottom: 30px;
+}
+
+.kb-btn {
+    grid-column: span 2;
+    background: #1a1a1a;
+    border: none;
+    color: #ccc;
+    font-size: 22px;
+    height: 57px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: normal;
+}
+
+.kb-btn:hover,
+.kb-btn.active-key {
+    background: #fff;
+    color: #000;
+    font-weight: bold;
+}
+
+/* English/Number Layout specific */
+.keyboard-grid.en-layout .kr-key {
+    display: none;
+}
+
+.keyboard-grid:not(.en-layout) .en-key {
+    display: none;
+}
+
+/* Toggle Button */
+.kb-toggle-btn {
+    background: #222;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 4px;
+    grid-column: span 2;
+    /* Make it wider */
+    transition: background 0.2s, color 0.2s;
+    font-weight: bold;
+}
+
+.kb-toggle-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+/* Search History Below Keyboard */
+.search-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.history-item {
+    color: #aaa;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px 0;
+    transition: color 0.2s;
+}
+
+/* Right Side: Results */
+.search-content {
+    flex-grow: 1;
+    padding-left: 30px;
+    padding-right: 4%;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+
+.search-content::-webkit-scrollbar {
+    display: none;
+}
+
+/* Global Input Field for Search Result Title */
+.search-result-input-container {
+    background: #222;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.search-result-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    font-weight: normal;
+    outline: none;
+    width: 100%;
+}
+
+.search-result-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding-bottom: 50px;
+}
+
+.result-item {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.result-thumbnail {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    position: relative;
+    /* important because .card img is absolute */
+    border-radius: 4px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.result-thumbnail:focus-visible,
+.result-item:hover .result-thumbnail {
+    transform: scale(1.05);
+    border-color: #00c73c;
+}
+
+/* Override general card styles if needed */
+.result-thumbnail.card {
+    min-width: unset;
+    height: auto;
+}
+
+.result-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.result-subtitle {
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================================
+   Refactored Inline Styles
+   ========================================= */
+
+/* Header / Badges */
+.logo-img-main {
+    padding: 15px 0 0 0;
+    width: 110px;
+}
+
+.badge-19-img {
+    padding: 3px 0 0 0;
+    width: 22px;
+}
+
+/* Hero Section */
+.btn-info-img {
+    width: 40px;
+}
+
+/* Layout Spacers */
+.main-padded {
+    padding-top: 100px;
+}
+
+.footer-spacer {
+    height: 100px;
+}
+
+/* Virtual Keyboard (surch.html) */
+.kb-span-3 {
+    grid-column: span 3 !important;
+}
+
+.kb-span-4 {
+    grid-column: span 4 !important;
+}
+
+.kb-space-spec {
+    grid-column: span 3;
+    font-weight: 900;
+    font-size: 60px;
+    line-height: 0;
+}
+
+.kb-btn-hidden {
+    visibility: hidden;
+}
+
+/* =========================================
+   Adult Certification Page (cert.html)
+   ========================================= */
+.cert-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+    /* Account for header height */
+    padding-top: 80px;
+    background-color: #000;
+}
+
+.cert-container {
+    text-align: center;
+    color: #fff;
+    font-family: 'Noto Sans KR', sans-serif;
+    margin-top: -50px;
+    /* Slight visual lift */
+}
+
+.cert-title {
+    font-size: 38px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    letter-spacing: -0.5px;
+}
+
+.cert-title img {
+    width: 38px;
+    height: auto;
+    vertical-align: middle;
+}
+
+.cert-subtitle {
+    font-size: 18px;
+    color: #eee;
+    margin-bottom: 60px;
+    font-weight: 400;
+}
+
+.qr-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.qr-label {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.qr-img-wrapper {
+    display: inline-block;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.qr-image {
+    display: block;
+    width: 220px;
+    height: 220px;
+    object-fit: contain;
+}
+
+.qr-steps {
+    font-size: 16px;
+    color: #bbb;
+    font-weight: 500;
+}
