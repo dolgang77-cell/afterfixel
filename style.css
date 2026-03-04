@@ -823,6 +823,7 @@ button:focus-visible,
 }
 
 .popup-hero-title {
+    width: 450px;
     font-size: 26px;
     font-weight: 700;
     color: white;

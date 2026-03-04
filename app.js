@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="popup-hero">
                 <div class="popup-hd">HD</div>
                 <video id="popup-video" autoplay muted loop playsinline
-                    src="https://cdnbigfilepreview.flexcloud.co.kr/preview/mp4_dna_sd/5732/5732e9dbee1479d8fa316327f85e8958_486598833.mp4?ucode=28781566&st=8JsNGffLy5yv2FbPZLRWlg&e=1772496601"
-                    style="width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block;">
+                    src="https://cdnbigfilepreview.flexcloud.co.kr/preview/mp4_dna_sd/d0dc/d0dcaddd553f01c3e811420d9a863929_719219731.mp4?ucode=&st=daHLafMF1plojzhDjORIvA&e=1772590819"
+                    style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
                 </video>
                 <div class="popup-hero-overlay">
                     <div class="popup-hero-title" id="popup-title"></div>
@@ -117,30 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
         popupOverlay.activeCard = card;
     };
 
-    // Click handler for movie-card items and movie BEST10 navigation
-    // Only fires if the card was ALREADY active (stopPropagation blocks non-active cards)
+    // Only Hero action falls to global click now
+    // 3. Handle Hero section '에피소드 보기' (btn-info) opening the popup
     document.addEventListener('click', (e) => {
-        // 1. Handle movie and drama BEST10 navigation
-        const rankCardMovie = e.target.closest('#rank-movie-slider .card');
-        if (rankCardMovie && rankCardMovie.classList.contains('active')) {
-            window.location.href = 'movie.html#header';
-            return;
-        }
-
-        const rankCardDrama = e.target.closest('#rank-drama-slider .card');
-        if (rankCardDrama && rankCardDrama.classList.contains('active')) {
-            window.location.href = 'drama.html#header';
-            return;
-        }
-
-        // 2. Handle regular movie cards opening the popup
-        const movieCard = e.target.closest('.card.movie-card');
-        if (movieCard && movieCard.classList.contains('active') && typeof openMoviePopup === 'function') {
-            openMoviePopup(movieCard);
-            return;
-        }
-
-        // 3. Handle Hero section '에피소드 보기' (btn-info) opening the popup
         const heroInfoBtn = e.target.closest('.hero-actions .btn-info');
         if (heroInfoBtn && typeof openMoviePopup === 'function') {
             const heroSection = heroInfoBtn.closest('.hero');
@@ -181,14 +160,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const addFocusable = document.querySelectorAll('.card, .profile-icon, .icon-btn');
     addFocusable.forEach(el => el.setAttribute('tabindex', '0'));
 
-    // Add universal click interaction for cards across all sliders
-    const allClickableCards = document.querySelectorAll('.slider-section .poster-card, .movie-card, .movie-card, .slider-section .rank-item, .slider-section .landscape-card');
-
-    allClickableCards.forEach(card => {
+    // Define a reusable function to bind card interactions
+    function initCardInteractions(card) {
         card.addEventListener('click', function (e) {
-            // If card was NOT already active, stop propagation to prevent popup from opening
-            const wasActive = this.classList.contains('active');
-            if (!wasActive) e.stopPropagation();
+            // Check if card was already active BEFORE we process the click
+            const wasActive = this.classList.contains('active') || (this.querySelector('.card') && this.querySelector('.card').classList.contains('active'));
 
             // Focus visually integrates with memory logic
             this.focus();
@@ -215,6 +191,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 updateLandscapeCard(slider);
             }
+
+            // Prevent the global document click listener from firing the popup if it wasn't already active
+            if (!wasActive) {
+                e.stopPropagation();
+                return; // stop execution, card was just clicked to be focused and is now active, await next click
+            }
+
+            // At this point, wasActive is true.
+            // Trigger popup programmatically if the click made it here (was active horizontally).
+            if (wasActive && typeof openMoviePopup === 'function') {
+                openMoviePopup(this);
+            }
         });
 
         card.addEventListener('keydown', function (e) {
@@ -222,11 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isActive = this.classList.contains('active') || (this.querySelector('.card') && this.querySelector('.card').classList.contains('active'));
 
                 if (isActive) {
-                    if (this.closest('#rank-movie-slider')) {
-                        window.location.href = 'movie.html#header';
-                    } else if (this.closest('#rank-drama-slider')) {
-                        window.location.href = 'drama.html#header';
-                    } else if (typeof openMoviePopup === 'function') {
+                    if (typeof openMoviePopup === 'function') {
                         openMoviePopup(this);
                     }
                 } else {
@@ -234,12 +218,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-    });
+    }
+
+    // Add universal click interaction for ALL cards
+    const allClickableCards = document.querySelectorAll('.slider-section .poster-card, .movie-card, .slider-section .rank-item, .slider-section .landscape-card');
+    allClickableCards.forEach(initCardInteractions);
 
     let isAnimating = false;
 
     function updateLandscapeCard(slider) {
-        const newActive = slider.querySelector('.active-landscape') || slider.querySelector('.active');
+        const newActive = slider.querySelector('.active');
         if (!newActive) return;
 
         const allCardsCurrent = Array.from(slider.querySelectorAll('.poster-card, .movie-card, .movie-card, .landscape-card, .rank-card'));
@@ -549,6 +537,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     cloneCard.removeAttribute('tabindex');
                 }
                 slider.appendChild(clone);
+                // Also bind click and enter events to the newly generated clone
+                initCardInteractions(clone);
             });
         }
 
@@ -624,7 +614,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (container) {
                 const focusables = Array.from(container.querySelectorAll('[tabindex="0"], a[href], button'));
                 const target = focusables[parseInt(savedElementIdx)] || focusables[0];
-
                 if (target) {
                     target.focus({ preventScroll: true });
                     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -633,3 +622,443 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 150);
     }
 });
+
+// ------------------------------------------------------------------
+// Moved from cert.html inline script:
+if (window.location.pathname.includes('cert.html')) {
+    // Redirect to adult.html after 2 seconds (2000 ms)
+    setTimeout(() => {
+        window.location.href = 'adult.html';
+    }, 2000);
+}
+
+// ------------------------------------------------------------------
+// Moved from surch.html inline script:
+if (window.location.pathname.includes('surch.html')) {
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const kbBtns = document.querySelectorAll('.kb-btn');
+        const kbSpace = document.getElementById('kbSpace');
+        const kbDelete = document.getElementById('kbDelete');
+        const keyboardGrid = document.getElementById('keyboardGrid');
+        const kbToggleLang = document.getElementById('kbToggleLang');
+
+        // Set initially value to existing input value "화려한 날들"
+        // Actually, per user request, it should be empty initially, 
+        // and only filled when selecting history items (like '화려한 날들').
+        searchInput.value = "";
+        let kbBuffer = [];
+
+        // Keyboard Toggle Logic via "abc123" button
+        let isEnLayout = false;
+        if (kbToggleLang && keyboardGrid) {
+            kbToggleLang.addEventListener('click', () => {
+                isEnLayout = !isEnLayout;
+                if (isEnLayout) {
+                    keyboardGrid.classList.add('en-layout');
+                    kbToggleLang.innerText = "가나다";
+                } else {
+                    keyboardGrid.classList.remove('en-layout');
+                    kbToggleLang.innerText = "abc123";
+                }
+            });
+        }
+
+        function updateSearchInput() {
+            if (window.Hangul) {
+                searchInput.value = Hangul.assemble(kbBuffer);
+            } else {
+                searchInput.value = kbBuffer.join(''); // Fallback if library fails to load
+            }
+        }
+
+        kbBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (e.target.style.visibility === 'hidden') return;
+                const char = e.target.innerText.trim();
+                if (char) {
+                    kbBuffer.push(char);
+                    updateSearchInput();
+                }
+            });
+        });
+
+        if (kbSpace) {
+            kbSpace.addEventListener('click', () => {
+                kbBuffer.push(" ");
+                updateSearchInput();
+            });
+        }
+
+        if (kbDelete) {
+            kbDelete.addEventListener('click', () => {
+                if (kbBuffer.length > 0) {
+                    kbBuffer.pop();
+                    updateSearchInput();
+                }
+            });
+        }
+
+        // Sync History Items with Search Input
+        const historyItems = document.querySelectorAll('.history-item');
+        historyItems.forEach(item => {
+            const triggerItem = () => {
+                const text = item.innerText.trim();
+                if (window.Hangul) {
+                    kbBuffer = Hangul.disassemble(text);
+                } else {
+                    kbBuffer = text.split('');
+                }
+                updateSearchInput();
+            };
+
+            // Click
+            item.addEventListener('click', triggerItem);
+
+            // Enter key
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    triggerItem();
+                }
+            });
+        });
+
+        // --- Full Search Page Arrow Navigation ---
+        // app.js handles navigation for .hero and .slider-section, which don't exist here.
+        // We need a custom 2D spatial or logical navigator for surch.html
+
+        // Define areas:
+        // 0: Header (.nav-menu a, button)
+        // 1: Keyboard Input Area (.keyboard-input-area button)
+        // 2: Keyboard Grid (.keyboard-grid .kb-btn:visible, .kb-toggle-btn)
+        // 3: Search History (.search-history-list .history-item)
+        // 4: Results Grid (.result-grid .result-thumbnail)
+
+        function getVisibleFocusables(selector) {
+            return Array.from(document.querySelectorAll(selector)).filter(el => {
+                const compStyle = getComputedStyle(el);
+                return compStyle.display !== 'none' && compStyle.visibility !== 'hidden';
+            });
+        }
+
+        let lastKbFocused = null;
+
+        document.addEventListener('keydown', (e) => {
+            const key = e.key;
+            if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
+
+            // If popup is open, let app.js handle it
+            if (document.querySelector('.movie-popup-overlay.active')) return;
+
+            e.preventDefault(); // Stop default scroll and app.js interference
+            e.stopPropagation();
+
+            const currentEl = document.activeElement;
+
+            const headerItems = getVisibleFocusables('.nav-menu a, .nav-menu button');
+            const inputItems = getVisibleFocusables('.keyboard-area-top button');
+            const kbItems = getVisibleFocusables('.keyboard-grid button');
+            const historyItems = getVisibleFocusables('.search-history-list .history-item');
+            const resultItems = getVisibleFocusables('.result-grid .result-thumbnail');
+
+            // Helper to find current area
+            const isHeader = headerItems.includes(currentEl);
+            const isInput = inputItems.includes(currentEl);
+            const isKb = kbItems.includes(currentEl);
+            const isHistory = historyItems.includes(currentEl);
+            const isResult = resultItems.includes(currentEl);
+
+            // Initial Focus Fallback
+            if (!isHeader && !isInput && !isKb && !isHistory && !isResult) {
+                if (inputItems.length > 0) inputItems[0].focus();
+                return;
+            }
+
+            // 1. Header Navigation
+            if (isHeader) {
+                const idx = headerItems.indexOf(currentEl);
+                if (key === 'ArrowRight' && idx < headerItems.length - 1) headerItems[idx + 1].focus();
+                else if (key === 'ArrowLeft' && idx > 0) headerItems[idx - 1].focus();
+                else if (key === 'ArrowDown') {
+                    if (inputItems.length > 0) {
+                        inputItems[0].focus();
+                        inputItems[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    else if (resultItems.length > 0) {
+                        resultItems[0].focus();
+                        resultItems[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }
+
+            // 2. Input Area Navigation
+            else if (isInput) {
+                const idx = inputItems.indexOf(currentEl);
+                if (key === 'ArrowRight') {
+                    if (idx < inputItems.length - 1) inputItems[idx + 1].focus();
+                    else if (resultItems.length > 0) {
+                        resultItems[0].focus(); // jump to results
+                        resultItems[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+                else if (key === 'ArrowLeft' && idx > 0) inputItems[idx - 1].focus();
+                else if (key === 'ArrowUp') {
+                    if (headerItems.length > 0) {
+                        headerItems[0].focus();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+                else if (key === 'ArrowDown') {
+                    if (kbItems.length > 0) {
+                        // Smart down mapping matching exact geometric span
+                        if (idx === 0) kbItems[2].focus(); // toggler to ㄴ
+                        else if (idx === 1) kbItems[3].focus(); // space to ㄷ
+                        else if (idx === 2) kbItems[4].focus(); // delete to ㄸ
+                        else kbItems[0].focus();
+
+                        document.activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }
+
+            // 3. Keyboard Grid Navigation
+            else if (isKb) {
+                const idx = kbItems.indexOf(currentEl);
+                const cols = 5;
+
+                // Always remember we were on this keyboard button before moving
+                lastKbFocused = currentEl;
+
+                const allBtnsIncludingHidden = Array.from(keyboardGrid.querySelectorAll('.kb-btn'));
+                const domIdx = allBtnsIncludingHidden.indexOf(currentEl);
+                const col = domIdx % cols;
+                const row = Math.floor(domIdx / cols);
+
+                if (key === 'ArrowRight') {
+                    let isRightEdge = false;
+                    if (currentEl.classList.contains('kb-toggle-btn')) {
+                        isRightEdge = true;
+                    } else {
+                        // User explicitly requested these keys to jump to thumbnails on ArrowRight
+                        const rightEdgeKeys = ['ㄸ', 'ㅅ', 'ㅊ', 'ㅎ', 'ㅓ', 'ㅛ', 'ㅣ', '5', '0', 'e', 'j', 'o', 't', 'y', 'z'];
+                        if (rightEdgeKeys.includes(currentEl.textContent.trim())) {
+                            isRightEdge = true;
+                        } else if (currentEl.classList.contains('en-key')) {
+                            // For English layout, maintain dynamic edge detection
+                            let nextBtnInDom = allBtnsIncludingHidden[domIdx + 1];
+                            if (col === 4) {
+                                isRightEdge = false;
+                            } else if (col === 3) {
+                                if (!nextBtnInDom || nextBtnInDom.style.visibility === 'hidden' || getComputedStyle(nextBtnInDom).display === 'none') {
+                                    isRightEdge = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (isRightEdge && resultItems.length > 0) {
+                        resultItems[0].focus();
+                        resultItems[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else if (!isRightEdge && idx < kbItems.length - 1) {
+                        // If they press Right on ㅊ(col 4), they go sequentially to ㅋ.
+                        kbItems[idx + 1].focus();
+                    } else if (idx === kbItems.length - 1 && resultItems.length > 0) {
+                        resultItems[0].focus();
+                        resultItems[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+                else if (key === 'ArrowLeft') {
+                    if (idx > 0) kbItems[idx - 1].focus();
+                }
+                else if (key === 'ArrowDown') {
+                    // User explicitly requested: ㅊ->ㅎ, ㅛ->ㅣ
+                    if (currentEl.textContent.trim() === 'ㅊ') {
+                        const targetBtn = Array.from(document.querySelectorAll('.kr-key')).find(k => k.textContent.trim() === 'ㅎ');
+                        if (targetBtn && targetBtn.style.visibility !== 'hidden' && getComputedStyle(targetBtn).display !== 'none') {
+                            targetBtn.focus();
+                            return;
+                        }
+                    }
+                    if (currentEl.textContent.trim() === 'ㅛ') {
+                        const targetBtn = Array.from(document.querySelectorAll('.kr-key')).find(k => k.textContent.trim() === 'ㅣ');
+                        if (targetBtn && targetBtn.style.visibility !== 'hidden' && getComputedStyle(targetBtn).display !== 'none') {
+                            targetBtn.focus();
+                            return;
+                        }
+                    }
+
+                    let nextRow = row + 1;
+                    let targetBtn = null;
+                    let maxRows = Math.ceil(allBtnsIncludingHidden.length / cols);
+
+                    while (nextRow < maxRows) {
+                        let candidate = allBtnsIncludingHidden[nextRow * cols + col];
+                        if (candidate && candidate.style.visibility !== 'hidden' && getComputedStyle(candidate).display !== 'none') {
+                            targetBtn = candidate;
+                            break;
+                        } else {
+                            // check leftwards in the same row
+                            let found = false;
+                            for (let c = col - 1; c >= 0; c--) {
+                                let fb = allBtnsIncludingHidden[nextRow * cols + c];
+                                if (fb && fb.style.visibility !== 'hidden' && getComputedStyle(fb).display !== 'none') {
+                                    targetBtn = fb;
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            // Fallback: If still not found, just grab the absolute latest visible button on that row
+                            if (!found) {
+                                let rowStartIndex = nextRow * cols;
+                                let flexTarget = allBtnsIncludingHidden.slice(rowStartIndex, rowStartIndex + cols).reverse().find(b => b && b.style.visibility !== 'hidden' && getComputedStyle(b).display !== 'none');
+                                if (flexTarget) {
+                                    targetBtn = flexTarget;
+                                    found = true;
+                                }
+                            }
+
+                            if (found) break;
+                        }
+                        nextRow++;
+                    }
+
+                    if (targetBtn) {
+                        targetBtn.focus();
+                    } else {
+                        if (historyItems.length > 0) {
+                            historyItems[0].focus();
+                            historyItems[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                }
+                else if (key === 'ArrowUp') {
+                    let prevRow = row - 1;
+                    let targetBtn = null;
+
+                    while (prevRow >= 0) {
+                        let candidate = allBtnsIncludingHidden[prevRow * cols + col];
+                        if (candidate && candidate.style.visibility !== 'hidden' && getComputedStyle(candidate).display !== 'none') {
+                            targetBtn = candidate;
+                            break;
+                        } else {
+                            // check leftwards in the same row
+                            let found = false;
+                            for (let c = col - 1; c >= 0; c--) {
+                                let fb = allBtnsIncludingHidden[prevRow * cols + c];
+                                if (fb && fb.style.visibility !== 'hidden' && getComputedStyle(fb).display !== 'none') {
+                                    targetBtn = fb;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (found) break;
+                        }
+                        prevRow--;
+                    }
+
+                    if (targetBtn) {
+                        targetBtn.focus();
+                    } else {
+                        if (inputItems.length > 0) {
+                            // Smart up mapping based on visual column geometry
+                            if (col <= 2) inputItems[0].focus(); // col 0,1,2 up to toggler
+                            else if (col === 3) inputItems[1].focus(); // col 3 up to space
+                            else if (inputItems.length > 2) inputItems[2].focus(); // col 4 up to delete
+                            else inputItems[0].focus();
+
+                            document.activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                }
+            }
+
+            // 4. History Navigation
+            else if (isHistory) {
+                const idx = historyItems.indexOf(currentEl);
+                if (key === 'ArrowDown' && idx < historyItems.length - 1) {
+                    historyItems[idx + 1].focus();
+                    historyItems[idx + 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                else if (key === 'ArrowUp') {
+                    if (idx > 0) {
+                        historyItems[idx - 1].focus();
+                        historyItems[idx - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    else if (lastKbFocused && Array.from(document.querySelectorAll('.keyboard-grid button')).includes(lastKbFocused)) {
+                        lastKbFocused.focus(); // Jump back to specifically where we left off
+                        lastKbFocused.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    else if (kbItems.length > 0) {
+                        kbItems[kbItems.length - 1].focus(); // fallback
+                        kbItems[kbItems.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+                else if (key === 'ArrowRight' && resultItems.length > 0) {
+                    resultItems[0].focus();
+                    resultItems[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            // 5. Results Grid Navigation (4 columns)
+            else if (isResult) {
+                const idx = resultItems.indexOf(currentEl);
+                const cols = 4;
+
+                if (key === 'ArrowRight' && idx < resultItems.length - 1) {
+                    resultItems[idx + 1].focus();
+                    resultItems[idx + 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                else if (key === 'ArrowLeft') {
+                    if (idx % cols === 0) {
+                        // Jump back to Left Sidebar explicitly revealing the input area
+                        const sidebar = document.querySelector('.search-sidebar');
+                        if (sidebar) sidebar.scrollTop = 0;
+
+                        if (lastKbFocused && getVisibleFocusables('.keyboard-grid button').includes(lastKbFocused)) {
+                            lastKbFocused.focus();
+                            lastKbFocused.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        } else if (inputItems.length > 0) {
+                            inputItems[inputItems.length - 1].focus();
+                            inputItems[inputItems.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        } else if (kbItems.length > 0) {
+                            kbItems[kbItems.length - 1].focus();
+                            kbItems[kbItems.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    } else if (idx > 0) {
+                        resultItems[idx - 1].focus();
+                        resultItems[idx - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+                else if (key === 'ArrowDown' && idx + cols < resultItems.length) {
+                    resultItems[idx + cols].focus();
+                    resultItems[idx + cols].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                else if (key === 'ArrowUp') {
+                    if (idx - cols >= 0) {
+                        resultItems[idx - cols].focus();
+                        resultItems[idx - cols].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else if (inputItems.length > 0) {
+                        inputItems[0].focus();
+                        inputItems[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else if (headerItems.length > 0) {
+                        headerItems[headerItems.length - 1].focus(); // Jump to header
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+            }
+        }, true); // Use capture to intercept before app.js
+
+        // Show right side input area returning to top when sidebar gets focus
+        document.addEventListener('focusin', (e) => {
+            const searchSidebar = document.querySelector('.search-sidebar');
+            const searchContent = document.querySelector('.search-content');
+
+            // 1. Return right side to top if left sidebar is focused
+            if (searchSidebar && searchContent && searchSidebar.contains(e.target)) {
+                searchContent.scrollTop = 0;
+            }
+        });
+    });
+}
