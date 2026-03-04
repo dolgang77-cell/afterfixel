@@ -506,10 +506,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     // Header/Hero horizontal menu navigation fallback
                     const currentContainer = rowContainers[currentRowIndex];
-                    const items = Array.from(currentContainer.querySelectorAll('button, a[href], [tabindex="0"]')).filter(el => getComputedStyle(el).display !== 'none');
-                    const idx = items.indexOf(currentFocused);
-                    if (key === 'ArrowRight' && idx + 1 < items.length) items[idx + 1].focus();
-                    if (key === 'ArrowLeft' && idx - 1 >= 0) items[idx - 1].focus();
+                    if (currentContainer) {
+                        const items = Array.from(currentContainer.querySelectorAll('button, a[href], [tabindex="0"]')).filter(el => getComputedStyle(el).display !== 'none' && el.offsetParent !== null);
+                        const idx = items.indexOf(currentFocused);
+
+                        if (key === 'ArrowRight') {
+                            if (idx !== -1 && idx + 1 < items.length) items[idx + 1].focus();
+                            else if (items.length > 0) items[0].focus();
+                        } else if (key === 'ArrowLeft') {
+                            if (idx > 0) items[idx - 1].focus();
+                            else if (idx === -1 && items.length > 0) items[items.length - 1].focus();
+                        }
+                    }
                 }
             }
         }
@@ -814,8 +822,8 @@ if (window.location.pathname.includes('surch.html')) {
                 else if (key === 'ArrowDown') {
                     if (kbItems.length > 0) {
                         // Smart down mapping matching exact geometric span
-                        if (idx === 0) kbItems[2].focus(); // toggler to ㄴ
-                        else if (idx === 1) kbItems[3].focus(); // space to ㄷ
+                        if (idx === 0) kbItems[0].focus(); // toggler to ㄱ
+                        else if (idx === 1) kbItems[2].focus(); // space to ㄴ
                         else if (idx === 2) kbItems[4].focus(); // delete to ㄸ
                         else kbItems[0].focus();
 
@@ -965,10 +973,9 @@ if (window.location.pathname.includes('surch.html')) {
                     } else {
                         if (inputItems.length > 0) {
                             // Smart up mapping based on visual column geometry
-                            if (col <= 2) inputItems[0].focus(); // col 0,1,2 up to toggler
-                            else if (col === 3) inputItems[1].focus(); // col 3 up to space
-                            else if (inputItems.length > 2) inputItems[2].focus(); // col 4 up to delete
-                            else inputItems[0].focus();
+                            if (col <= 1) inputItems[0].focus(); // col 0,1 (ㄱ,ㄲ) up to toggler
+                            else if (col <= 3) inputItems[1].focus(); // col 2,3 (ㄴ,ㄷ) up to space
+                            else inputItems[2].focus(); // col 4 (ㄸ) up to delete
 
                             document.activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
