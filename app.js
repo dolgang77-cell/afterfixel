@@ -238,10 +238,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const detailsContainer = section.querySelector('.details-content');
             if (detailsContainer) {
 
-                const meta = newActive.getAttribute('data-meta');
-                const desc = newActive.getAttribute('data-desc');
+                let meta = newActive.getAttribute('data-meta');
+                let desc = newActive.getAttribute('data-desc');
 
-
+                if (window.location.pathname.includes('adult.html') && desc) {
+                    desc = '<img src="images/cts_19_ico.png"> ' + desc;
+                }
 
                 if (meta && desc) {
                     detailsContainer.innerHTML = `

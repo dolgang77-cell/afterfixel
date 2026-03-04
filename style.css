@@ -586,6 +586,11 @@ button:focus-visible,
     word-wrap: break-word;
 }
 
+.details-content .desc img {
+    vertical-align: middle;
+    padding: 0 0 5px 0;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
