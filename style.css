@@ -768,7 +768,7 @@ button:focus-visible,
     background: #fff;
     border-radius: 10px;
     width: 80vw;
-    max-width: 1200px;
+    max-width: 1050px;
     height: 90vh;
     max-height: 90vh;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.07);
