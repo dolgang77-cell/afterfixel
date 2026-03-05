@@ -317,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (prevContainer.classList.contains('header')) {
                         target = prevContainer.querySelector('.nav-menu a.active') || prevContainer.querySelector('a[href]');
                     }
+                    if (!target) target = prevContainer.querySelector('.card.active'); // Prioritize restoring previous column
                     if (!target) target = prevContainer.querySelector('[tabindex="0"], a[href], button');
 
                     if (target) {
@@ -333,7 +334,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (key === 'ArrowDown') {
                 for (let i = currentRowIndex + 1; i < rowContainers.length; i++) {
                     const nextContainer = rowContainers[i];
-                    const target = nextContainer.querySelector('[tabindex="0"], a[href], button');
+                    let target = nextContainer.querySelector('.card.active'); // Prioritize restoring previous column
+                    if (!target) target = nextContainer.querySelector('[tabindex="0"], a[href], button');
 
                     if (target) {
                         target.focus({ preventScroll: true });
@@ -348,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const slider = currentFocused.closest('.slider');
 
                 if (slider) {
-                    if (['movie-slider', 'drama-slider', 'variety-slider', 'rank-movie-slider', 'rank-drama-slider'].includes(slider.id)) {
+                    if (['movie-slider', 'drama-slider', 'variety-slider'].includes(slider.id)) {
                         // Complex DOM Shuffle Infinite Loop strictly for designated Sliders
                         if (slider.dataset.isAnimating === 'true') return;
 
@@ -460,14 +462,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     } else {
                         // Standard Native Scroll for all other generic sliders
-                        const items = Array.from(slider.querySelectorAll('.card, [tabindex="0"], button, a[href]')).filter(el => getComputedStyle(el).display !== 'none');
-                        const idx = items.indexOf(currentFocused);
+                        // Use slider.children to avoid double-selecting parent wrappers and inner cards
+                        const items = Array.from(slider.children).filter(el => getComputedStyle(el).display !== 'none');
+                        const idx = items.findIndex(el => el === currentFocused || el.contains(currentFocused));
 
                         let nextItem = null;
-                        if (key === 'ArrowRight' && idx + 1 < items.length) {
-                            nextItem = items[idx + 1];
-                        } else if (key === 'ArrowLeft' && idx - 1 >= 0) {
-                            nextItem = items[idx - 1];
+                        if (key === 'ArrowRight') {
+                            // Move right if not at the very end
+                            if (idx + 1 < items.length) {
+                                nextItem = items[idx + 1];
+                            }
+                        } else if (key === 'ArrowLeft') {
+                            // Move left if not at the very beginning
+                            if (idx - 1 >= 0) {
+                                nextItem = items[idx - 1];
+                            }
                         }
 
                         if (nextItem) {
@@ -475,6 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const allCards = Array.from(slider.querySelectorAll('.card'));
                             allCards.forEach(card => {
                                 card.classList.remove('active');
+                                card.classList.remove('active-landscape');
                                 card.removeAttribute('tabindex');
                             });
 
@@ -483,19 +493,25 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (targetCard) {
                                 targetCard.classList.add('active'); // IMPORTANT: Native generic scroll does not scale to landscape, layout remains stable
                                 targetCard.setAttribute('tabindex', '0');
+                                targetCard.focus({ preventScroll: true });
+                            } else {
+                                nextItem.focus({ preventScroll: true });
                             }
 
-                            nextItem.focus({ preventScroll: true });
                             // Save Focus State
                             sessionStorage.setItem('lastFocusedElementClass', targetCard ? targetCard.className : nextItem.className);
                             sessionStorage.setItem('lastFocusedSectionIndex', currentRowIndex);
 
-                            // Scroll slider cleanly so this element aligns as the leftmost visible item
+                            // Scroll slider strictly by 1 item length (relative scroll) to avoid max-scroll capping bugs
                             const sliderStyle = window.getComputedStyle(slider);
                             const paddingLeft = parseInt(sliderStyle.paddingLeft || '0');
+                            const gap = parseFloat(sliderStyle.gap || '10');
 
-                            slider.scrollTo({
-                                left: nextItem.offsetLeft - slider.offsetLeft - paddingLeft,
+                            // Get the target's width including the gap, so one shift perfectly moves one card
+                            const shiftDist = nextItem.offsetWidth + gap;
+
+                            slider.scrollBy({
+                                left: key === 'ArrowRight' ? shiftDist : -shiftDist,
                                 behavior: 'smooth'
                             });
 
@@ -532,7 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // For DOM shuffle sliders: clone all original cards once as right-edge buffer
         // This prevents the seam gap during the 500ms animation before a card is re-appended
-        const isDOMShuffleSlider = ['movie-slider', 'drama-slider', 'variety-slider', 'rank-movie-slider', 'rank-drama-slider'].includes(slider.id) || slider.classList.contains('shuffle-slider');
+        const isDOMShuffleSlider = ['movie-slider', 'drama-slider', 'variety-slider'].includes(slider.id) || slider.classList.contains('shuffle-slider');
         if (isDOMShuffleSlider) {
             // Clip cards that slide off the edge
             const wrapper = slider.closest('.slider-wrapper');
@@ -612,24 +628,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Restore focus state on page load exactly using the index map
-    const savedSectionIdx = sessionStorage.getItem('lastFocusedSectionIndex');
-    const savedElementIdx = sessionStorage.getItem('lastFocusedElementIndex');
+    // Session storage focus restoration has been removed to allow default reset behavior (Item 1 on reload)
 
-    if (savedSectionIdx !== null && savedElementIdx !== null) {
-        setTimeout(() => {
-            const rowContainers = Array.from(document.querySelectorAll('.header, .hero, .slider-section'));
-            const container = rowContainers[parseInt(savedSectionIdx)];
+    // Hero background video 2-second delay transition
+    const heroPlaceholder = document.getElementById('heroPlaceholder');
+    const heroVideo = document.getElementById('heroVideo');
+    if (heroPlaceholder && heroVideo) {
+        function playHeroVideo() {
+            heroVideo.style.opacity = '1';
+            heroPlaceholder.style.opacity = '0';
+            heroVideo.play().catch(e => console.log('Autoplay blocked', e));
+        }
 
-            if (container) {
-                const focusables = Array.from(container.querySelectorAll('[tabindex="0"], a[href], button'));
-                const target = focusables[parseInt(savedElementIdx)] || focusables[0];
-                if (target) {
-                    target.focus({ preventScroll: true });
-                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
-        }, 150);
+        setTimeout(playHeroVideo, 2000); // Initial 2 second delay
+
+        heroVideo.addEventListener('ended', () => {
+            // Show placeholder again
+            heroVideo.style.opacity = '0';
+            heroPlaceholder.style.opacity = '1';
+
+            // Wait 2 seconds, then loop
+            setTimeout(() => {
+                heroVideo.currentTime = 0;
+                playHeroVideo();
+            }, 2000);
+        });
     }
 });
 

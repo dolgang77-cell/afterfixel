@@ -38,8 +38,11 @@
         <section class="hero">
             <div class="hero-overlay"></div>
             <!-- Captain Hook like image placeholder -->
-            <video class="hero-img" src="images/9aed8a42571550ffee16e432eb2a728c_555610449.mp4" autoplay muted loop
-                playsinline style="object-fit:cover;"></video>
+            <img class="hero-img" id="heroPlaceholder" src="images/main_top_thumb.jpg"
+                style="position:absolute; width:100%; height:100%; object-fit:cover; z-index:0; transition:opacity 0.5s;">
+            <video class="hero-img" id="heroVideo" src="images/9aed8a42571550ffee16e432eb2a728c_555610449.mp4" muted
+                playsinline
+                style="object-fit:cover; position:absolute; z-index:-1; width:100%; height:100%; opacity:0; transition:opacity 0.5s;"></video>
             <div class="hero-content">
                 <h1 class="hero-title">
                     <span class="n-badge">N</span> 상상을초월하는 모험액션대작
