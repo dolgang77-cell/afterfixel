@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const slider = currentFocused.closest('.slider');
 
                 if (slider) {
-                    if (['movie-slider', 'drama-slider', 'variety-slider'].includes(slider.id)) {
+                    if (['movie-slider', 'drama-slider', 'variety-slider', 'rank-movie-slider', 'rank-drama-slider'].includes(slider.id)) {
                         // Complex DOM Shuffle Infinite Loop strictly for designated Sliders
                         if (slider.dataset.isAnimating === 'true') return;
 
@@ -548,7 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // For DOM shuffle sliders: clone all original cards once as right-edge buffer
         // This prevents the seam gap during the 500ms animation before a card is re-appended
-        const isDOMShuffleSlider = ['movie-slider', 'drama-slider', 'variety-slider'].includes(slider.id) || slider.classList.contains('shuffle-slider');
+        const isDOMShuffleSlider = ['movie-slider', 'drama-slider', 'variety-slider', 'rank-movie-slider', 'rank-drama-slider'].includes(slider.id) || slider.classList.contains('shuffle-slider');
         if (isDOMShuffleSlider) {
             // Clip cards that slide off the edge
             const wrapper = slider.closest('.slider-wrapper');
