@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "kr.co.ive.nightlife",
+      "sha256_cert_fingerprints": [
+        "8F:06:FD:8A:32:C5:32:68:18:6E:B7:A3:98:88:7E:BD:15:BC:25:49:BE:B0:79:5B:08:32:58:9C:9F:1C:F2:03"
+      ]
+    }
+  }
+]

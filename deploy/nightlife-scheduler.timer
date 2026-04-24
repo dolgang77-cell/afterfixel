@@ -1,0 +1,12 @@
+# /etc/systemd/system/nightlife-scheduler.timer
+# 1분마다 스케줄러 실행
+
+[Unit]
+Description=NITE Scheduler Timer
+
+[Timer]
+OnCalendar=*:*:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
