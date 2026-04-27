@@ -106,7 +106,7 @@
           <TabBar active={tab} onChange={onChangeTab} />
 
           {/* Overlays */}
-          {partyOpen && <PartyDetail party={partyOpen} onBack={() => setPartyOpen(null)} />}
+          {partyOpen && <PartyDetail party={partyOpen} onBack={() => setPartyOpen(null)} onOpenClub={(c) => { setPartyOpen(null); setClubOpen(c); }} />}
           {clubOpen && <ClubDetail club={clubOpen} onBack={() => setClubOpen(null)} onOpenParty={(p) => { setClubOpen(null); setPartyOpen(p); }} />}
           {search && <SearchModal onClose={() => setSearch(false)} onOpenParty={onOpenParty} onOpenClub={onOpenClub} />}
           {notif && <NotificationsPanel onClose={() => setNotif(false)} onOpenParty={onOpenParty} />}
