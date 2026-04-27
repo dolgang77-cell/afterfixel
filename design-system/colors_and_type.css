@@ -1,0 +1,251 @@
+/* ============================================================
+   ClubParty Design System — Colors & Type
+   ============================================================
+   Brand: ClubParty (클럽파티) — global, location-based
+   nightlife discovery app for clubbers worldwide.
+   Aesthetic: dark, electric, after-midnight. Neon energy
+   over photographic darkness. Korean-first typography.
+   ============================================================ */
+
+/* ---------- Pretendard ---------- */
+@font-face { font-family: "Pretendard"; src: url("./fonts/Pretendard-Thin.otf")        format("opentype"); font-weight: 100; font-style: normal; font-display: swap; }
+@font-face { font-family: "Pretendard"; src: url("./fonts/Pretendard-ExtraLight.otf")  format("opentype"); font-weight: 200; font-style: normal; font-display: swap; }
+@font-face { font-family: "Pretendard"; src: url("./fonts/Pretendard-Light.otf")       format("opentype"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Pretendard"; src: url("./fonts/Pretendard-Regular.otf")     format("opentype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Pretendard"; src: url("./fonts/Pretendard-Medium.otf")      format("opentype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Pretendard"; src: url("./fonts/Pretendard-SemiBold.otf")    format("opentype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Pretendard"; src: url("./fonts/Pretendard-Bold.otf")        format("opentype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Pretendard"; src: url("./fonts/Pretendard-ExtraBold.otf")   format("opentype"); font-weight: 800; font-style: normal; font-display: swap; }
+@font-face { font-family: "Pretendard"; src: url("./fonts/Pretendard-Black.otf")       format("opentype"); font-weight: 900; font-style: normal; font-display: swap; }
+
+:root {
+  /* ---------- Color · Base / Neutral ---------- */
+  /* Dark-first. The product runs at night. */
+  --cp-ink-0:        #000000;        /* pure black, deepest layer */
+  --cp-ink-1:        #07070A;        /* app background — almost black, faint cool tint */
+  --cp-ink-2:        #0E0E14;        /* card / sheet base */
+  --cp-ink-3:        #15151E;        /* raised surface */
+  --cp-ink-4:        #1E1E2A;        /* elevated card on raised surface */
+  --cp-ink-5:        #2A2A38;        /* hairline borders, subtle dividers */
+  --cp-ink-6:        #3A3A4A;        /* hover-state borders */
+
+  --cp-line:         rgba(255,255,255,0.08);  /* default 1px hairline */
+  --cp-line-strong:  rgba(255,255,255,0.16);  /* emphasised hairline */
+  --cp-scrim:        rgba(0,0,0,0.55);        /* photo overlay */
+  --cp-scrim-deep:   rgba(0,0,0,0.78);
+
+  /* ---------- Color · Foreground (text) ---------- */
+  --cp-fg-1:         #FFFFFF;                 /* primary text */
+  --cp-fg-2:         rgba(255,255,255,0.72);  /* secondary text, body */
+  --cp-fg-3:         rgba(255,255,255,0.50);  /* tertiary, captions, meta */
+  --cp-fg-4:         rgba(255,255,255,0.32);  /* placeholder, disabled */
+  --cp-fg-on-neon:   #07070A;                 /* text on neon fills */
+
+  /* ---------- Color · Brand · Electric Magenta (primary) ---------- */
+  /* The headline neon. Used for primary CTAs, "going" state,
+     active tab indicator, and the headline gradient.        */
+  --cp-magenta-50:   #FFE6F1;
+  --cp-magenta-100:  #FFB8DA;
+  --cp-magenta-200:  #FF7AB8;
+  --cp-magenta-300:  #FF3D96;
+  --cp-magenta-400:  #FF1077;        /* core brand */
+  --cp-magenta-500:  #E60068;        /* pressed */
+  --cp-magenta-600:  #B30053;
+
+  /* ---------- Color · Brand · Cyan (secondary) ---------- */
+  /* The cool counter-note. Used for links, info, "live now",
+     and the second stop in brand gradients.                  */
+  --cp-cyan-50:      #DFFBFF;
+  --cp-cyan-100:     #9CF0FF;
+  --cp-cyan-200:     #5AE3FF;
+  --cp-cyan-300:     #1FD2FF;        /* core */
+  --cp-cyan-400:     #00B8E6;
+  --cp-cyan-500:     #0098BF;
+
+  /* ---------- Color · Brand · Violet (tertiary) ---------- */
+  /* Quiet third tone. Used for chips, route lines, and
+     subtle gradient backgrounds.                              */
+  --cp-violet-50:    #EFE7FF;
+  --cp-violet-100:   #C9B3FF;
+  --cp-violet-200:   #A07AFF;
+  --cp-violet-300:   #7B49FF;        /* core */
+  --cp-violet-400:   #5E28E6;
+  --cp-violet-500:   #4719B3;
+
+  /* ---------- Color · Accent · Acid Lime (alerts/peak) ---------- */
+  /* The "hot tonight" / "peak hour" pop. Use sparingly. */
+  --cp-lime:         #C8FF1A;
+  --cp-lime-dim:     #9FCC00;
+
+  /* ---------- Color · Semantic ---------- */
+  --cp-success:      #2DE38E;        /* "RSVP confirmed" */
+  --cp-success-bg:   rgba(45,227,142,0.14);
+  --cp-warning:      #FFB020;        /* "almost full" */
+  --cp-warning-bg:   rgba(255,176,32,0.14);
+  --cp-danger:       #FF4D5E;        /* "sold out", errors */
+  --cp-danger-bg:    rgba(255,77,94,0.14);
+  --cp-info:         var(--cp-cyan-300);
+  --cp-info-bg:      rgba(31,210,255,0.14);
+  --cp-live:         var(--cp-magenta-400);  /* live-now pulse */
+
+  /* ---------- Color · Gradients ---------- */
+  --cp-grad-brand:        linear-gradient(135deg, #FF1077 0%, #7B49FF 50%, #1FD2FF 100%);
+  --cp-grad-brand-soft:   linear-gradient(135deg, rgba(255,16,119,0.25) 0%, rgba(123,73,255,0.20) 50%, rgba(31,210,255,0.20) 100%);
+  --cp-grad-magenta:      linear-gradient(135deg, #FF3D96 0%, #FF1077 100%);
+  --cp-grad-cyan:         linear-gradient(135deg, #5AE3FF 0%, #1FD2FF 100%);
+  --cp-grad-night:        linear-gradient(180deg, #0E0E14 0%, #07070A 100%);
+  --cp-grad-floor:        radial-gradient(ellipse at 50% 100%, rgba(255,16,119,0.35) 0%, rgba(123,73,255,0.18) 35%, transparent 70%);
+  --cp-grad-protection:   linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 100%);
+  --cp-grad-protection-t: linear-gradient(0deg,   rgba(0,0,0,0) 0%, rgba(0,0,0,0.65) 100%);
+
+  /* ---------- Color · Tab / Surface Tints ---------- */
+  /* Each main tab carries a subtle accent.                     */
+  --cp-tab-home:     var(--cp-magenta-400);
+  --cp-tab-party:    var(--cp-cyan-300);
+  --cp-tab-club:     var(--cp-violet-300);
+  --cp-tab-route:    var(--cp-lime);
+  --cp-tab-me:       #FFFFFF;
+
+  /* ---------- Glow / Shadow ---------- */
+  --cp-glow-magenta:  0 0 24px rgba(255,16,119,0.55), 0 0 64px rgba(255,16,119,0.25);
+  --cp-glow-cyan:     0 0 24px rgba(31,210,255,0.55), 0 0 64px rgba(31,210,255,0.25);
+  --cp-glow-violet:   0 0 24px rgba(123,73,255,0.55), 0 0 64px rgba(123,73,255,0.25);
+  --cp-glow-soft:     0 0 0 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.6);
+
+  --cp-shadow-1:      0 1px 2px rgba(0,0,0,0.5);
+  --cp-shadow-2:      0 4px 12px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.4);
+  --cp-shadow-3:      0 12px 32px rgba(0,0,0,0.6),  0 2px 6px rgba(0,0,0,0.4);
+  --cp-shadow-4:      0 24px 64px rgba(0,0,0,0.7),  0 4px 12px rgba(0,0,0,0.5);
+
+  --cp-inner-press:   inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.4);
+
+  /* ---------- Radii ---------- */
+  --cp-r-xs:  4px;
+  --cp-r-sm:  8px;
+  --cp-r-md:  12px;
+  --cp-r-lg:  16px;
+  --cp-r-xl:  20px;
+  --cp-r-2xl: 28px;
+  --cp-r-3xl: 36px;
+  --cp-r-pill: 999px;
+
+  /* ---------- Spacing (4-pt scale) ---------- */
+  --cp-s-0:   0px;
+  --cp-s-1:   4px;
+  --cp-s-2:   8px;
+  --cp-s-3:   12px;
+  --cp-s-4:   16px;
+  --cp-s-5:   20px;
+  --cp-s-6:   24px;
+  --cp-s-7:   32px;
+  --cp-s-8:   40px;
+  --cp-s-9:   48px;
+  --cp-s-10:  64px;
+  --cp-s-11:  80px;
+  --cp-s-12:  96px;
+
+  /* ---------- Type · Family ---------- */
+  --cp-font-sans:   "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, sans-serif;
+  --cp-font-display:"Pretendard", -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --cp-font-mono:   "JetBrains Mono", "SF Mono", "Menlo", ui-monospace, monospace;
+
+  /* ---------- Type · Scale ---------- */
+  /* Display sizes are tight, near-100% line-height — club poster energy */
+  --cp-fs-display-xl: 64px;
+  --cp-fs-display-l:  48px;
+  --cp-fs-display-m:  36px;
+  --cp-fs-h1:         28px;
+  --cp-fs-h2:         22px;
+  --cp-fs-h3:         18px;
+  --cp-fs-body:       15px;
+  --cp-fs-body-sm:    14px;
+  --cp-fs-caption:    12px;
+  --cp-fs-micro:      11px;
+
+  --cp-lh-display:    1.02;
+  --cp-lh-tight:      1.18;
+  --cp-lh-snug:       1.32;
+  --cp-lh-body:       1.5;
+
+  --cp-tracking-tight:  -0.02em;
+  --cp-tracking-normal:  0em;
+  --cp-tracking-wide:    0.04em;
+  --cp-tracking-caps:    0.12em;
+
+  /* ---------- Motion ---------- */
+  --cp-ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --cp-ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --cp-ease-club:   cubic-bezier(0.34, 1.56, 0.64, 1);   /* tiny bounce, "drop" */
+  --cp-d-fast:      120ms;
+  --cp-d-base:      220ms;
+  --cp-d-slow:      420ms;
+}
+
+/* ============================================================
+   Semantic element styles — drop these onto a page and most
+   text will look correct without further work.
+   ============================================================ */
+
+.cp-app {
+  background: var(--cp-ink-1);
+  color: var(--cp-fg-1);
+  font-family: var(--cp-font-sans);
+  font-size: var(--cp-fs-body);
+  line-height: var(--cp-lh-body);
+  letter-spacing: var(--cp-tracking-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.cp-display-xl,
+.cp-display-l,
+.cp-display-m,
+.cp-h1, .cp-h2, .cp-h3 {
+  font-family: var(--cp-font-display);
+  color: var(--cp-fg-1);
+  letter-spacing: var(--cp-tracking-tight);
+  text-wrap: balance;
+}
+
+.cp-display-xl { font-size: var(--cp-fs-display-xl); font-weight: 900; line-height: var(--cp-lh-display); }
+.cp-display-l  { font-size: var(--cp-fs-display-l);  font-weight: 800; line-height: var(--cp-lh-display); }
+.cp-display-m  { font-size: var(--cp-fs-display-m);  font-weight: 800; line-height: var(--cp-lh-tight); }
+.cp-h1         { font-size: var(--cp-fs-h1);         font-weight: 700; line-height: var(--cp-lh-tight); }
+.cp-h2         { font-size: var(--cp-fs-h2);         font-weight: 700; line-height: var(--cp-lh-tight); }
+.cp-h3         { font-size: var(--cp-fs-h3);         font-weight: 600; line-height: var(--cp-lh-snug); }
+
+.cp-body       { font-size: var(--cp-fs-body);       font-weight: 400; line-height: var(--cp-lh-body); color: var(--cp-fg-2); }
+.cp-body-sm    { font-size: var(--cp-fs-body-sm);    font-weight: 400; line-height: var(--cp-lh-body); color: var(--cp-fg-2); }
+.cp-caption    { font-size: var(--cp-fs-caption);    font-weight: 500; line-height: var(--cp-lh-snug); color: var(--cp-fg-3); }
+.cp-micro      { font-size: var(--cp-fs-micro);      font-weight: 600; line-height: 1.2;               color: var(--cp-fg-3); }
+
+.cp-eyebrow {
+  font-size: var(--cp-fs-micro);
+  font-weight: 700;
+  letter-spacing: var(--cp-tracking-caps);
+  text-transform: uppercase;
+  color: var(--cp-fg-3);
+}
+
+.cp-mono {
+  font-family: var(--cp-font-mono);
+  font-feature-settings: "tnum" 1;
+}
+
+.cp-text-grad {
+  background: var(--cp-grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.cp-link {
+  color: var(--cp-cyan-300);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(31,210,255,0.4);
+  transition: color var(--cp-d-fast) var(--cp-ease-out), border-color var(--cp-d-fast) var(--cp-ease-out);
+}
+.cp-link:hover { color: var(--cp-cyan-200); border-bottom-color: var(--cp-cyan-200); }
+
+::selection { background: var(--cp-magenta-400); color: var(--cp-fg-on-neon); }

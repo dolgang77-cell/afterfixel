@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>클럽파티 · ClubParty</title>
+  <link rel="stylesheet" href="design-system/colors_and_type.css" />
+  <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #000; min-height: 100%; font-family: 'Pretendard', system-ui, sans-serif; color: #fff; }
+    * { box-sizing: border-box; }
+    @keyframes cp-pulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.18); opacity: 1; } }
+    @keyframes cp-eq { 0% { height: 20%; } 100% { height: 100%; } }
+    @keyframes cp-drift1 { 0% { transform: translate(0,0); } 100% { transform: translate(8%,6%); } }
+    @keyframes cp-drift2 { 0% { transform: translate(0,0); } 100% { transform: translate(-6%,-4%); } }
+    @keyframes cp-drift3 { 0% { transform: translate(0,0); } 100% { transform: translate(4%,-8%); } }
+    @keyframes cp-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes cp-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .stage { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: radial-gradient(ellipse at top, #15151E 0%, #000 70%); }
+    ::-webkit-scrollbar { width: 0; height: 0; }
+    /* hide scrollbar everywhere except the body container if needed */
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body class="cp-app">
+  <div id="root" class="stage"></div>
+
+  <script src="src/data.js"></script>
+  <script type="text/babel" src="src/primitives.jsx"></script>
+  <script type="text/babel" src="src/loaders.jsx"></script>
+  <script type="text/babel" src="src/TabBar.jsx"></script>
+  <script type="text/babel" src="src/HomeScreen.jsx"></script>
+  <script type="text/babel" src="src/ListControls.jsx"></script>
+  <script type="text/babel" src="src/Screens.jsx"></script>
+  <script type="text/babel" src="src/Detail.jsx"></script>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function PhoneFrame({ children }) {
+      return (
+        <div style={{
+          width: 390, height: 844, borderRadius: 48, overflow: 'hidden',
+          position: 'relative', background: '#07070A',
+          boxShadow: '0 60px 120px rgba(255,16,119,0.18), 0 30px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08), 0 0 0 12px #1a1a22, 0 0 0 13px #2a2a35',
+        }}>
+          {/* Dynamic island */}
+          <div style={{
+            position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)',
+            width: 122, height: 36, borderRadius: 24, background: '#000', zIndex: 200,
+          }} />
+          {/* Status bar bg */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '18px 28px 0', zIndex: 100, color: '#fff',
+            fontSize: 15, fontWeight: 600,
+            fontFamily: '-apple-system, system-ui',
+            pointerEvents: 'none',
+          }}>
+            <span data-screen-label="status-time">21:43</span>
+            <span style={{ width: 80 }} />
+            <span style={{ display: 'inline-flex', gap: 5, alignItems: 'center' }}>
+              <svg width="17" height="11" viewBox="0 0 17 11"><rect x="0" y="6" width="3" height="5" rx="0.5" fill="#fff"/><rect x="4.5" y="4" width="3" height="7" rx="0.5" fill="#fff"/><rect x="9" y="2" width="3" height="9" rx="0.5" fill="#fff"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#fff"/></svg>
+              <svg width="24" height="11" viewBox="0 0 24 11"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="#fff" strokeOpacity="0.4" fill="none"/><rect x="2" y="2" width="17" height="7" rx="1" fill="#fff"/></svg>
+            </span>
+          </div>
+          {children}
+        </div>
+      );
+    }
+
+    function App() {
+      const [tab, setTab] = useState('home');
+      const [splash, setSplash] = useState(true);
+      const [partyOpen, setPartyOpen] = useState(null);
+      const [clubOpen, setClubOpen] = useState(null);
+      const [search, setSearch] = useState(false);
+      const [notif, setNotif] = useState(false);
+
+      const onOpenParty = (p) => setPartyOpen(p);
+      const onOpenClub = (c) => setClubOpen(c);
+      const onSearch = () => setSearch(true);
+      const onNotif = () => setNotif(true);
+
+      const onChangeTab = (id) => {
+        setPartyOpen(null);
+        setClubOpen(null);
+        setSearch(false);
+        setNotif(false);
+        setTab(id);
+      };
+
+      // Lazy-mount tabs: mount each tab the first time it's visited, then
+      // keep it mounted and toggle visibility with display:none.
+      // This pays the mount cost once (when tab is first opened) instead of
+      // on every tab switch — and preserves scroll position + state.
+      const [mounted, setMounted] = useState({ home: true });
+      useEffect(() => { if (!mounted[tab]) setMounted(m => ({ ...m, [tab]: true })); }, [tab]);
+
+      const tabScreen = (id) => {
+        if (id === 'home')  return <HomeScreen  onOpenParty={onOpenParty} onOpenClub={onOpenClub} onSearch={onSearch} onNotif={onNotif} onTab={onChangeTab} />;
+        if (id === 'party') return <PartyScreen onOpenParty={onOpenParty} onSearch={onSearch} onNotif={onNotif} />;
+        if (id === 'club')  return <ClubScreen  onOpenClub={onOpenClub}  onSearch={onSearch} onNotif={onNotif} />;
+        if (id === 'route') return <RouteScreen onOpenClub={onOpenClub}  onSearch={onSearch} onNotif={onNotif} />;
+        if (id === 'me')    return <MeScreen    onOpenParty={onOpenParty} onSearch={onSearch} onNotif={onNotif} />;
+      };
+
+      return (
+        <PhoneFrame>
+          {splash && <SplashScreen onDone={() => setSplash(false)} />}
+          <div data-screen-label={tab} style={{ position: 'absolute', inset: 0 }}>
+            {['home', 'party', 'club', 'route', 'me'].map(id => (
+              <div key={id} style={{
+                position: 'absolute', inset: 0, paddingTop: 54, paddingBottom: 84,
+                display: tab === id ? 'block' : 'none',
+              }}>
+                <div style={{ height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
+                  {mounted[id] ? tabScreen(id) : null}
+                </div>
+              </div>
+            ))}
+          </div>
+          <TabBar active={tab} onChange={onChangeTab} />
+          {/* Home indicator */}
+          <div style={{ position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)', width: 134, height: 5, borderRadius: 100, background: 'rgba(255,255,255,0.5)', zIndex: 60, pointerEvents: 'none' }} />
+
+          {/* Overlays */}
+          {partyOpen && <PartyDetail party={partyOpen} onBack={() => setPartyOpen(null)} />}
+          {clubOpen && <ClubDetail club={clubOpen} onBack={() => setClubOpen(null)} onOpenParty={(p) => { setClubOpen(null); setPartyOpen(p); }} />}
+          {search && <SearchModal onClose={() => setSearch(false)} onOpenParty={onOpenParty} onOpenClub={onOpenClub} />}
+          {notif && <NotificationsPanel onClose={() => setNotif(false)} onOpenParty={onOpenParty} />}
+        </PhoneFrame>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
