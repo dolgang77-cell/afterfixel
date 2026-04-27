@@ -168,7 +168,8 @@ function HomeScreen({ onOpenParty, onOpenClub, onSearch, onNotif, onOpenRoute, o
 
       {/* HERO — full-bleed club photo with single-line headline (shorter for tighter top) */}
       <div style={{ position: 'relative', height: 170, overflow: 'hidden', marginBottom: 4 }}>
-        <ClubThumb id={featured.id} tint={featured.glow} size={420} ratio={0.55} fill />
+        <ClubThumb id={featured.id} tint={featured.glow} size={420} ratio={0.55} fill
+          image="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=1200&q=80" />
         {/* Tonal scrim — lay design-system tones over photo so the hero
             doesn't read as raw saturated neon. */}
         <div style={{ position: 'absolute', inset: 0,
