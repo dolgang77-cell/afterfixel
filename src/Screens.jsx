@@ -1,4 +1,4 @@
-/* global React, Icon, GlowDot, Pill, GenreTag, Eyebrow, FloorGlow, OrganicLoader, GlobeLoader, CosmicScale, CalcKey, PulseBars, Aurora, Avatar, FriendStack, PartyRow, CPTopBar */
+﻿/* global React, Icon, GlowDot, Pill, GenreTag, Eyebrow, FloorGlow, OrganicLoader, GlobeLoader, CosmicScale, CalcKey, PulseBars, Aurora, Avatar, FriendStack, PartyRow, CPTopBar */
 
 // JSX requires capitalized identifiers; aliases for ListControls components.
 const ListBar = (p) => React.createElement(window.ListBar, p);
@@ -25,207 +25,61 @@ function useDeferredReady() {
   return ready;
 }
 
-// PARTY SCREEN — searchable index w/ Filter / Sort / Map / Compare toolbar.
-function PartyScreen({ onOpenParty, onSearch, onNotif }) {
-  // ⚠️ Rules of Hooks: 모든 hook은 early return 전에 호출 필수
-  const ready = useDeferredReady();
+// PARTY SCREEN — minimal navigation hub. Connects to home & detail pages.
+function PartyScreen({ onOpenParty, onSearch, onNotif, onTab }) {
   const data = window.CP_DATA;
-  const [genre, setGenre] = useStateP('전체');
-  const [day, setDay] = useStateP('all');
-  const [filterValue, setFilterValue] = useStateP({ areas: [], genres: [] });
-  const [sortBy, setSortBy] = useStateP('recent');
-  const [filterOpen, setFilterOpen] = useStateP(false);
-  const [sortOpen, setSortOpen] = useStateP(false);
-  const [mapMode, setMapMode] = useStateP(false);
-  const [compareMode, setCompareMode] = useStateP(false);
-  const [compareItems, setCompareItems] = useStateP([]);
-  const [compareSheetOpen, setCompareSheetOpen] = useStateP(false);
-
-  const genres = ['전체', 'TECHNO', 'HOUSE', 'DEEP', 'DISCO', 'INDUSTRIAL', 'MINIMAL', 'AMBIENT', 'R&B'];
-  const allAreas = Array.from(new Set(data.parties.map(p => p.area)));
-  const allGenres = Array.from(new Set(data.parties.flatMap(p => p.genres)));
-  const days = [
-    { id: 'all', label: '전체' },
-    { id: '2026-04-27', label: '오늘' },
-    { id: '2026-04-28', label: '토요일' },
-    { id: '2026-04-29', label: '일요일' },
-  ];
-
-  // partyVenue lookup for response time
-  const venueOf = (p) => data.clubs.find(c => c.name === p.venue);
-
-  const list = useMemoP(() => {
-    let l = data.parties.slice();
-    if (genre !== '전체') l = l.filter(p => p.genres.includes(genre));
-    if (day !== 'all') l = l.filter(p => p.dateISO === day);
-    if ((filterValue.areas || []).length) l = l.filter(p => filterValue.areas.includes(p.area));
-    if ((filterValue.genres || []).length) l = l.filter(p => p.genres.some(g => filterValue.genres.includes(g)));
-
-    const cmp = {
-      recent:    (a, b) => new Date(b.dateISO) - new Date(a.dateISO),
-      popular:   (a, b) => (b.going || 0) - (a.going || 0),
-      priceAsc:  (a, b) => (a.price || 0) - (b.price || 0),
-      priceDesc: (a, b) => (b.price || 0) - (a.price || 0),
-      response:  (a, b) => (venueOf(a)?.responseMin ?? 99) - (venueOf(b)?.responseMin ?? 99),
-    }[sortBy] || ((a, b) => a.distance - b.distance);
-    return l.sort(cmp);
-  }, [genre, day, filterValue, sortBy]);
-
-  const filterCount = (filterValue.areas || []).length + (filterValue.genres || []).length;
-  const toggleCompare = (p) => {
-    setCompareItems(items => {
-      if (items.find(x => x.id === p.id)) return items.filter(x => x.id !== p.id);
-      if (items.length >= 3) return items;
-      return [...items, p];
-    });
-  };
-
-  // ⚡ ready=false면 헤더+스켈레톤만. 다음 idle 틱에 setReady(true) → 본 화면 마운트
-  if (!ready) {
-    return (
-      <div style={{ paddingBottom: 32 }}>
-        <CPTopBar onSearch={onSearch} onNotif={onNotif} />
-        <div style={{ padding: '14px 16px 10px' }}>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
-            이번 주 라인업
-            <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(95,224,255,0.85)', letterSpacing: '0.12em', marginLeft: 8, textTransform: 'uppercase' }}>PARTY</span>
-          </h1>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 16px' }}>
-          {[0,1,2].map(i => (
-            <div key={i} style={{ height: 88, borderRadius: 14, background: 'rgba(21,21,30,0.6)', border: '1px solid rgba(255,255,255,0.04)' }} />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const featured = (data && data.parties && data.parties[0]) || null;
+  const todayCount = data ? data.parties.filter(p => p.dateISO === '2026-04-27').length : 0;
 
   return (
-    <div style={{ paddingBottom: compareMode ? 230 : 32 }}>
+    <div style={{ paddingBottom: 32 }}>
       <CPTopBar onSearch={onSearch} onNotif={onNotif} />
 
       <div style={{ padding: '14px 16px 10px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
-            이번 주 라인업
-            <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(95,224,255,0.85)', letterSpacing: '0.12em', marginLeft: 8, textTransform: 'uppercase', verticalAlign: 'middle' }}>PARTY</span>
-          </h1>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', whiteSpace: 'nowrap' }}>{list.length} parties</div>
-        </div>
+        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+          이번 주 라인업
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(95,224,255,0.85)', letterSpacing: '0.12em', marginLeft: 8, textTransform: 'uppercase' }}>PARTY</span>
+        </h1>
+        <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+          오늘 {todayCount}개 · 메인에서 전체 보기
+        </p>
       </div>
 
-      <div style={{ padding: '0 16px 12px' }}>
-        <button onClick={onSearch} style={{
-          all: 'unset', cursor: 'pointer', width: '100%',
-          display: 'flex', gap: 10, alignItems: 'center',
-          padding: '13px 14px', borderRadius: 12,
-          background: '#15151E', border: '1px solid rgba(255,255,255,0.08)', boxSizing: 'border-box',
+      {featured && (
+        <button onClick={() => onOpenParty(featured)} style={{
+          all: 'unset', cursor: 'pointer', display: 'block',
+          margin: '4px 16px 12px',
+          padding: 16, borderRadius: 16,
+          background: 'linear-gradient(135deg, rgba(31,210,255,0.18), rgba(123,73,255,0.14))',
+          border: '1px solid rgba(31,210,255,0.25)', boxSizing: 'border-box',
         }}>
-          <Icon name="search" size={16} color="rgba(255,255,255,0.5)" />
-          <span style={{ flex: 1, color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>DJ, 클럽, 파티 검색</span>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#1FD2FF', letterSpacing: '0.16em', textTransform: 'uppercase' }}>오늘의 픽</div>
+          <div style={{ marginTop: 6, fontSize: 16, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>{featured.title}</div>
+          <div style={{ marginTop: 4, fontSize: 12, color: 'rgba(255,255,255,0.65)' }}>{featured.venue} · {featured.area} · {featured.time}</div>
+          <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, color: '#5FE0FF' }}>디테일 보기 →</div>
         </button>
-      </div>
-
-      <div style={{ padding: '0 16px 12px', display: 'flex', gap: 6 }}>
-        {days.map(d => (
-          <button key={d.id} onClick={() => setDay(d.id)} style={{
-            all: 'unset', cursor: 'pointer', flex: 1, textAlign: 'center',
-            padding: '10px 0', borderRadius: 10,
-            background: day === d.id ? '#1FD2FF' : 'rgba(255,255,255,0.06)',
-            color: day === d.id ? '#07070A' : '#fff',
-            fontSize: 11, fontWeight: 800, letterSpacing: '0.04em',
-          }}>{d.label}</button>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '0 16px 14px' }}>
-        {genres.map(f => (
-          <button key={f} onClick={() => setGenre(f)} style={{
-            all: 'unset', cursor: 'pointer', padding: '8px 14px', borderRadius: 999,
-            background: genre === f ? '#1FD2FF' : 'rgba(255,255,255,0.06)',
-            color: genre === f ? '#07070A' : 'rgba(255,255,255,0.72)',
-            fontSize: 11, fontWeight: 800, letterSpacing: '0.04em',
-            whiteSpace: 'nowrap', textTransform: 'uppercase',
-          }}>{f}</button>
-        ))}
-      </div>
-
-      <ListBar
-        active={{ filter: filterCount > 0, sort: sortBy !== 'recent', map: mapMode, compare: compareMode }}
-        count={{ filter: filterCount }}
-        onFilter={() => setFilterOpen(true)}
-        onSort={() => setSortOpen(true)}
-        onMap={() => setMapMode(m => !m)}
-        onCompare={() => { setCompareMode(m => !m); if (compareMode) setCompareItems([]); }}
-      />
-
-      {mapMode ? (
-        <MapView
-          items={list}
-          getPin={(p) => ({ id: p.id, label: p.title, color: p.glow === 'magenta' ? '#FF1077' : p.glow === 'cyan' ? '#1FD2FF' : '#7B49FF' })}
-          onSelect={onOpenParty}
-        />
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 16px' }}>
-          {!ready ? (
-            // ⚡ 탭 전환 즉시 보여줄 가벼운 스켈레톤
-            <>
-              {[0,1,2].map(i => (
-                <div key={i} style={{ height: 88, borderRadius: 14, background: 'rgba(21,21,30,0.6)', border: '1px solid rgba(255,255,255,0.04)' }} />
-              ))}
-            </>
-          ) : list.length === 0 ? (
-            <div style={{ padding: '40px 0', textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
-              <div style={{ fontSize: 13, fontWeight: 600 }}>맞는 파티가 없어</div>
-              <div style={{ marginTop: 4, fontSize: 11 }}>필터를 다시 시도해봐</div>
-            </div>
-          ) : list.map(p => (
-            // ⚡ content-visibility: 화면 밖 행은 렌더 스킵 → 탭 전환 즉각화
-            <div key={p.id} style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 120px' }}>
-              <CompareWrapRow
-                mode={compareMode}
-                selected={!!compareItems.find(x => x.id === p.id)}
-                onToggle={() => toggleCompare(p)}
-              >
-                <PartyRow party={p} onOpen={compareMode ? () => toggleCompare(p) : onOpenParty} />
-              </CompareWrapRow>
-            </div>
-          ))}
-        </div>
       )}
 
-      {filterOpen && <FilterSheet
-        areas={allAreas} genres={allGenres}
-        value={filterValue}
-        onChange={setFilterValue}
-        onClear={() => setFilterValue({ areas: [], genres: [] })}
-        onClose={() => setFilterOpen(false)}
-      />}
-      {sortOpen && <SortSheet value={sortBy} onChange={setSortBy} onClose={() => setSortOpen(false)} />}
-      {compareMode && <CompareTray
-        items={compareItems} max={3}
-        onRemove={(p) => setCompareItems(items => items.filter(x => x.id !== p.id))}
-        onClear={() => setCompareItems([])}
-        onCompare={() => setCompareSheetOpen(true)}
-        onClose={() => { setCompareMode(false); setCompareItems([]); }}
-      />}
-      {compareSheetOpen && <CompareSheet
-        items={compareItems}
-        eyebrow="VS · 파티 비교"
-        title="라인업 비교"
-        rows={[
-          { label: '날짜',    render: (it) => it.date || it.dateISO },
-          { label: '베뉴',    render: (it) => it.venue },
-          { label: '지역',    render: (it) => it.area },
-          { label: '장르',    render: (it) => (it.genres || []).join(' · ') },
-          { label: '예약',    render: (it) => `${venueOf(it)?.responseMin ?? '—'}분 응답` },
-          { label: '입장료',  render: (it) => it.price ? `₩${it.price.toLocaleString()}` : '무료' },
-          { label: '거리',    render: (it) => `${it.distance}km` },
-        ]}
-        onClose={() => setCompareSheetOpen(false)}
-      />}
-    </div>
-  );
+      <div style={{ padding: '0 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <button onClick={() => onTab && onTab('home')} style={{
+          all: 'unset', cursor: 'pointer',
+          padding: '18px 14px', borderRadius: 14,
+          background: '#15151E', border: '1px solid rgba(255,255,255,0.08)', boxSizing: 'border-box',
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>전체 라인업</div>
+          <div style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>홈으로 →</div>
+        </button>
+        <button onClick={onSearch} style={{
+          all: 'unset', cursor: 'pointer',
+          padding: '18px 14px', borderRadius: 14,
+          background: '#15151E', border: '1px solid rgba(255,255,255,0.08)', boxSizing: 'border-box',
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>검색</div>
+          <div style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>DJ · 클럽 · 파티</div>
+        </button>
+      </div>
+    </div>);
+
 }
 window.PartyScreen = PartyScreen;
 
@@ -257,180 +111,61 @@ function CompareWrapRow({ mode, selected, onToggle, children }) {
 }
 window.CompareWrapRow = CompareWrapRow;
 
-// CLUB SCREEN — venue grid w/ Filter / Sort / Map / Compare toolbar.
-function ClubScreen({ onOpenClub, onSearch, onNotif }) {
-  // ⚠️ Rules of Hooks: 모든 hook은 early return 전에 호출 필수
-  const ready = useDeferredReady();
+// CLUB SCREEN — minimal navigation hub. Connects to home & detail pages.
+function ClubScreen({ onOpenClub, onSearch, onNotif, onTab }) {
   const data = window.CP_DATA;
-  const [filterValue, setFilterValue] = useStateP({ areas: [], genres: [] });
-  const [sortBy, setSortBy] = useStateP('recent');
-  const [filterOpen, setFilterOpen] = useStateP(false);
-  const [sortOpen, setSortOpen] = useStateP(false);
-  const [mapMode, setMapMode] = useStateP(false);
-  const [compareMode, setCompareMode] = useStateP(false);
-  const [compareItems, setCompareItems] = useStateP([]);
-  const [compareSheetOpen, setCompareSheetOpen] = useStateP(false);
-
-  const allAreas = Array.from(new Set(data.clubs.map(c => c.area)));
-  const allGenres = Array.from(new Set(data.clubs.flatMap(c => c.genres)));
-
-  const list = useMemoP(() => {
-    let l = data.clubs.slice();
-    if ((filterValue.areas || []).length) l = l.filter(c => filterValue.areas.includes(c.area));
-    if ((filterValue.genres || []).length) l = l.filter(c => c.genres.some(g => filterValue.genres.includes(g)));
-
-    const cmp = {
-      recent:    (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
-      popular:   (a, b) => (b.popularity || 0) - (a.popularity || 0),
-      priceAsc:  (a, b) => (a.priceLevel || 0) - (b.priceLevel || 0),
-      priceDesc: (a, b) => (b.priceLevel || 0) - (a.priceLevel || 0),
-      response:  (a, b) => (a.responseMin || 99) - (b.responseMin || 99),
-    }[sortBy] || ((a, b) => (a.distance || 0) - (b.distance || 0));
-    return l.sort(cmp);
-  }, [filterValue, sortBy]);
-
-  const filterCount = (filterValue.areas || []).length + (filterValue.genres || []).length;
-  const toggleCompare = (c) => {
-    setCompareItems(items => {
-      if (items.find(x => x.id === c.id)) return items.filter(x => x.id !== c.id);
-      if (items.length >= 3) return items;
-      return [...items, c];
-    });
-  };
-
-  // ⚡ ready=false면 헤더+스켈레톤만. 다음 idle 틱에 본 화면 마운트
-  if (!ready) {
-    return (
-      <div style={{ paddingBottom: 32 }}>
-        <CPTopBar onSearch={onSearch} onNotif={onNotif} />
-        <div style={{ padding: '14px 16px 10px' }}>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
-            서울의 플로어
-            <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(160,122,255,0.85)', letterSpacing: '0.12em', marginLeft: 8, textTransform: 'uppercase' }}>CLUB</span>
-          </h1>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px' }}>
-          {[0,1,2,3].map(i => (
-            <div key={i} style={{ height: 200, borderRadius: 16, background: 'rgba(21,21,30,0.6)', border: '1px solid rgba(255,255,255,0.04)' }} />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const featured = (data && data.clubs && data.clubs[0]) || null;
+  const totalCount = data ? data.clubs.length : 0;
 
   return (
-    <div style={{ paddingBottom: compareMode ? 230 : 32 }}>
+    <div style={{ paddingBottom: 32 }}>
       <CPTopBar onSearch={onSearch} onNotif={onNotif} />
-      <div style={{ padding: '14px 16px 10px', position: 'relative' }}>
-        <Aurora intensity={0.35} />
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
-            서울의 플로어
-            <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(160,122,255,0.85)', letterSpacing: '0.12em', marginLeft: 8, textTransform: 'uppercase', verticalAlign: 'middle' }}>CLUB</span>
-          </h1>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', whiteSpace: 'nowrap' }}>{list.length} clubs</div>
-        </div>
+
+      <div style={{ padding: '14px 16px 10px' }}>
+        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+          서울의 플로어
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(160,122,255,0.85)', letterSpacing: '0.12em', marginLeft: 8, textTransform: 'uppercase' }}>CLUB</span>
+        </h1>
+        <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+          전국 {totalCount}개 클럽 · 메인에서 전체 보기
+        </p>
       </div>
 
-      <ListBar
-        active={{ filter: filterCount > 0, sort: sortBy !== 'recent', map: mapMode, compare: compareMode }}
-        count={{ filter: filterCount }}
-        onFilter={() => setFilterOpen(true)}
-        onSort={() => setSortOpen(true)}
-        onMap={() => setMapMode(m => !m)}
-        onCompare={() => { setCompareMode(m => !m); if (compareMode) setCompareItems([]); }}
-      />
-
-      {mapMode ? (
-        <MapView
-          items={list}
-          getPin={(c) => ({ id: c.id, label: c.name, color: c.glow === 'magenta' ? '#FF1077' : c.glow === 'cyan' ? '#1FD2FF' : '#7B49FF' })}
-          onSelect={onOpenClub}
-        />
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px' }}>
-          {!ready ? (
-            // ⚡ 탭 전환 즉시 보여줄 가벼운 스켈레톤
-            <>
-              {[0,1,2,3].map(i => (
-                <div key={i} style={{ height: 200, borderRadius: 16, background: 'rgba(21,21,30,0.6)', border: '1px solid rgba(255,255,255,0.04)' }} />
-              ))}
-            </>
-          ) : list.length === 0 ? (
-            <div style={{ gridColumn: '1 / -1', padding: '40px 0', textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
-              <div style={{ fontSize: 13, fontWeight: 600 }}>맞는 클럽이 없어</div>
-              <div style={{ marginTop: 4, fontSize: 11 }}>필터를 다시 시도해봐</div>
-            </div>
-          ) : list.map(c => {
-            const selected = !!compareItems.find(x => x.id === c.id);
-            const card = (
-              <button onClick={() => compareMode ? toggleCompare(c) : onOpenClub(c)} style={{
-                all: 'unset', cursor: 'pointer', display: 'block',
-                borderRadius: 16, overflow: 'hidden',
-                background: '#15151E', border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.55)',
-              }}>
-                <div style={{ position: 'relative', height: 130, background: '#0E0E14' }}>
-                  <ClubThumb id={c.id} tint={c.glow} size={170} ratio={0.76} fill />
-                  <FloorGlow tint={c.glow} intensity={0.30} />
-                  <div style={{ position: 'absolute', top: 8, right: 8 }}>
-                    <span style={{ display: 'inline-flex', gap: 3, alignItems: 'center', padding: '3px 8px', borderRadius: 999, background: 'rgba(12,12,18,0.94)', color: '#fff', fontSize: 11, fontWeight: 800 }}>
-                      <Icon name="star" size={11} color="#C8FF1A" />{c.rating}
-                    </span>
-                  </div>
-                </div>
-                <div style={{ padding: '11px 12px 13px' }}>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>{c.name}</div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{c.area}</div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontWeight: 600, marginTop: 6 }}>cap. {c.cap} · {c.genres.join(', ')}</div>
-                </div>
-              </button>
-            );
-            return (
-              // ⚡ content-visibility: 화면 밖 카드는 렌더 스킵 → 탭 전환 즉각화
-              <div key={c.id} style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 240px' }}>
-                <CompareWrapRow mode={compareMode} selected={selected} onToggle={() => toggleCompare(c)}>
-                  {card}
-                </CompareWrapRow>
-              </div>
-            );
-          })}
-        </div>
+      {featured && (
+        <button onClick={() => onOpenClub(featured)} style={{
+          all: 'unset', cursor: 'pointer', display: 'block',
+          margin: '4px 16px 12px',
+          padding: 16, borderRadius: 16,
+          background: 'linear-gradient(135deg, rgba(123,73,255,0.20), rgba(255,16,119,0.14))',
+          border: '1px solid rgba(123,73,255,0.30)', boxSizing: 'border-box',
+        }}>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#A07AFF', letterSpacing: '0.16em', textTransform: 'uppercase' }}>추천 클럽</div>
+          <div style={{ marginTop: 6, fontSize: 16, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>{featured.name}</div>
+          <div style={{ marginTop: 4, fontSize: 12, color: 'rgba(255,255,255,0.65)' }}>{featured.area} · cap. {featured.cap} · ★ {featured.rating}</div>
+          <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, color: '#A07AFF' }}>디테일 보기 →</div>
+        </button>
       )}
 
-      {filterOpen && <FilterSheet
-        areas={allAreas} genres={allGenres}
-        value={filterValue}
-        onChange={setFilterValue}
-        onClear={() => setFilterValue({ areas: [], genres: [] })}
-        onClose={() => setFilterOpen(false)}
-      />}
-      {sortOpen && <SortSheet value={sortBy} onChange={setSortBy} onClose={() => setSortOpen(false)} />}
-      {compareMode && <CompareTray
-        items={compareItems} max={3}
-        onRemove={(c) => setCompareItems(items => items.filter(x => x.id !== c.id))}
-        onClear={() => setCompareItems([])}
-        onCompare={() => setCompareSheetOpen(true)}
-        onClose={() => { setCompareMode(false); setCompareItems([]); }}
-      />}
-      {compareSheetOpen && <CompareSheet
-        items={compareItems}
-        eyebrow="VS · 클럽 비교"
-        title="플로어 한눈에"
-        rows={[
-          { label: '지역',    render: (it) => it.area },
-          { label: '캐파',    render: (it) => `${it.cap}명` },
-          { label: '장르',    render: (it) => it.genres.join(' · ') },
-          { label: '드레스',  render: (it) => it.dress },
-          { label: '오픈',    render: (it) => it.openHours },
-          { label: '응답',    render: (it) => `${it.responseMin}분` },
-          { label: '평점',    render: (it) => `★ ${it.rating}` },
-          { label: '리뷰',    render: (it) => `${it.reviews.toLocaleString()}` },
-        ]}
-        onClose={() => setCompareSheetOpen(false)}
-      />}
-    </div>
-  );
+      <div style={{ padding: '0 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <button onClick={() => onTab && onTab('home')} style={{
+          all: 'unset', cursor: 'pointer',
+          padding: '18px 14px', borderRadius: 14,
+          background: '#15151E', border: '1px solid rgba(255,255,255,0.08)', boxSizing: 'border-box',
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>전체 클럽</div>
+          <div style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>홈으로 →</div>
+        </button>
+        <button onClick={onSearch} style={{
+          all: 'unset', cursor: 'pointer',
+          padding: '18px 14px', borderRadius: 14,
+          background: '#15151E', border: '1px solid rgba(255,255,255,0.08)', boxSizing: 'border-box',
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>검색</div>
+          <div style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>DJ · 클럽 · 파티</div>
+        </button>
+      </div>
+    </div>);
+
 }
 window.ClubScreen = ClubScreen;
 
