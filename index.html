@@ -39,11 +39,11 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // 풀 화면 컨테이너 — 핸드폰 베젤/상태바/다이내믹 아일랜드 제거 버전
+    // 컨테이너 — 최대 700px 폭, 가운데 정렬
     function FullFrame({ children }) {
       return (
         <div style={{
-          width: '100vw', minHeight: '100vh',
+          maxWidth: 700, margin: '0 auto', minHeight: '100vh',
           position: 'relative', background: '#07070A',
           color: '#fff',
         }}>
@@ -91,7 +91,7 @@
       return (
         <FullFrame>
           {splash && <SplashScreen onDone={() => setSplash(false)} />}
-          <div data-screen-label={tab} style={{ position: 'fixed', inset: 0 }}>
+          <div data-screen-label={tab} style={{ position: 'fixed', inset: 0, maxWidth: 700, margin: '0 auto' }}>
             {['home', 'party', 'club', 'route', 'me'].map(id => (
               <div key={id} style={{
                 position: 'absolute', inset: 0, paddingBottom: 84,
