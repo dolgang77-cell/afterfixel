@@ -7,11 +7,28 @@ const SortSheet = (p) => React.createElement(window.SortSheet, p);
 const MapView = (p) => React.createElement(window.MapView, p);
 const CompareTray = (p) => React.createElement(window.CompareTray, p);
 const CompareSheet = (p) => React.createElement(window.CompareSheet, p);
-const { useState: useStateP, useMemo: useMemoP } = React;
+const { useState: useStateP, useMemo: useMemoP, useEffect: useEffectP } = React;
+
+// ⚡ Deferred mount hook — 탭 전환 즉시 화면 표시, 무거운 리스트는 다음 idle 틱에 렌더
+function useDeferredReady() {
+  const [ready, setReady] = useStateP(false);
+  useEffectP(() => {
+    const ric = window.requestIdleCallback;
+    const cic = window.cancelIdleCallback;
+    if (ric) {
+      const id = ric(() => setReady(true), { timeout: 200 });
+      return () => cic && cic(id);
+    }
+    const id = setTimeout(() => setReady(true), 0);
+    return () => clearTimeout(id);
+  }, []);
+  return ready;
+}
 
 // PARTY SCREEN — searchable index w/ Filter / Sort / Map / Compare toolbar.
 function PartyScreen({ onOpenParty, onSearch, onNotif }) {
   const data = window.CP_DATA;
+  const ready = useDeferredReady(); // ⚡ 탭 전환 안 막게
   const [genre, setGenre] = useStateP('전체');
   const [day, setDay] = useStateP('all');
   const [filterValue, setFilterValue] = useStateP({ areas: [], genres: [] });
@@ -129,7 +146,14 @@ function PartyScreen({ onOpenParty, onSearch, onNotif }) {
         />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 16px' }}>
-          {list.length === 0 ? (
+          {!ready ? (
+            // ⚡ 탭 전환 즉시 보여줄 가벼운 스켈레톤
+            <>
+              {[0,1,2].map(i => (
+                <div key={i} style={{ height: 88, borderRadius: 14, background: 'rgba(21,21,30,0.6)', border: '1px solid rgba(255,255,255,0.04)' }} />
+              ))}
+            </>
+          ) : list.length === 0 ? (
             <div style={{ padding: '40px 0', textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
               <div style={{ fontSize: 13, fontWeight: 600 }}>맞는 파티가 없어</div>
               <div style={{ marginTop: 4, fontSize: 11 }}>필터를 다시 시도해봐</div>
@@ -215,6 +239,7 @@ window.CompareWrapRow = CompareWrapRow;
 // CLUB SCREEN — venue grid w/ Filter / Sort / Map / Compare toolbar.
 function ClubScreen({ onOpenClub, onSearch, onNotif }) {
   const data = window.CP_DATA;
+  const ready = useDeferredReady(); // ⚡ 탭 전환 안 막게
   const [filterValue, setFilterValue] = useStateP({ areas: [], genres: [] });
   const [sortBy, setSortBy] = useStateP('recent');
   const [filterOpen, setFilterOpen] = useStateP(false);
@@ -282,7 +307,14 @@ function ClubScreen({ onOpenClub, onSearch, onNotif }) {
         />
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px' }}>
-          {list.length === 0 ? (
+          {!ready ? (
+            // ⚡ 탭 전환 즉시 보여줄 가벼운 스켈레톤
+            <>
+              {[0,1,2,3].map(i => (
+                <div key={i} style={{ height: 200, borderRadius: 16, background: 'rgba(21,21,30,0.6)', border: '1px solid rgba(255,255,255,0.04)' }} />
+              ))}
+            </>
+          ) : list.length === 0 ? (
             <div style={{ gridColumn: '1 / -1', padding: '40px 0', textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
               <div style={{ fontSize: 13, fontWeight: 600 }}>맞는 클럽이 없어</div>
               <div style={{ marginTop: 4, fontSize: 11 }}>필터를 다시 시도해봐</div>
