@@ -555,7 +555,7 @@ function CompareView({ type, items, labels, getFacts, getHeadline, getSubline, o
 // ─────────────────────────────────────────────────────────────
 // PARTY SCREEN — list view matching parties/index.blade.php.
 // ─────────────────────────────────────────────────────────────
-function PartyScreen({ onOpenParty }) {
+function PartyScreen({ onOpenParty, onSearch, onNotif }) {
   const data = window.CP_DATA;
   const allParties = data && data.parties ? data.parties : [];
   const [filterOpen, setFilterOpen] = useStateP(false);
@@ -591,7 +591,8 @@ function PartyScreen({ onOpenParty }) {
 
   return (
     <div style={{ paddingBottom: 32 }}>
-      <div style={{ padding: '20px 16px 0' }}>
+      <CPTopBar onSearch={onSearch} onNotif={onNotif} />
+      <div style={{ padding: '14px 16px 0' }}>
         <ListSectionHeader
           title="파티"
           subtitle="날짜와 지역을 먼저 좁히고 빠르게 비교하세요."
@@ -794,7 +795,7 @@ window.CompareWrapRow = CompareWrapRow;
 // ─────────────────────────────────────────────────────────────
 // CLUB SCREEN — list view matching clubs/index.blade.php.
 // ─────────────────────────────────────────────────────────────
-function ClubScreen({ onOpenClub }) {
+function ClubScreen({ onOpenClub, onSearch, onNotif }) {
   const data = window.CP_DATA;
   const allClubs = data && data.clubs ? data.clubs : [];
   const [filterOpen, setFilterOpen] = useStateP(false);
@@ -837,7 +838,8 @@ function ClubScreen({ onOpenClub }) {
 
   return (
     <div style={{ paddingBottom: 32 }}>
-      <div style={{ padding: '20px 16px 0' }}>
+      <CPTopBar onSearch={onSearch} onNotif={onNotif} />
+      <div style={{ padding: '14px 16px 0' }}>
         <ListSectionHeader
           title="클럽"
           subtitle="지역, 장르, 응답 속도로 빠르게 압축하세요."
