@@ -102,8 +102,8 @@
 
       const tabScreen = (id) => {
         if (id === 'home')  return <HomeScreen  onOpenParty={onOpenParty} onOpenClub={onOpenClub} onSearch={onSearch} onNotif={onNotif} onTab={onChangeTab} />;
-        if (id === 'party') return <PartyScreen onOpenParty={onOpenParty} onSearch={onSearch} onNotif={onNotif} onTab={onChangeTab} />;
-        if (id === 'club')  return <ClubScreen  onOpenClub={onOpenClub}  onSearch={onSearch} onNotif={onNotif} onTab={onChangeTab} />;
+        if (id === 'party') return <PartyScreen onOpenParty={onOpenParty} onSearch={onSearch} onNotif={onNotif} />;
+        if (id === 'club')  return <ClubScreen  onOpenClub={onOpenClub}  onSearch={onSearch} onNotif={onNotif} />;
         if (id === 'route') return <RouteScreen onOpenClub={onOpenClub}  onSearch={onSearch} onNotif={onNotif} />;
         if (id === 'me')    return <MeScreen    onOpenParty={onOpenParty} onSearch={onSearch} onNotif={onNotif} />;
       };
