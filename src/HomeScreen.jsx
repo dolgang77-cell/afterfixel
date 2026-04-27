@@ -123,7 +123,7 @@ function CPTopBar({ city = '서울 · 강남구', onSearch, onNotif }) {
   return (
     <div style={{
       position: 'sticky', top: 0, zIndex: 5,
-      padding: '14px 16px 12px',
+      padding: '8px 16px 8px',
       background: 'rgba(7,7,10,0.92)',
       borderBottom: '1px solid rgba(255,255,255,0.06)',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between'
@@ -166,8 +166,8 @@ function HomeScreen({ onOpenParty, onOpenClub, onSearch, onNotif, onOpenRoute, o
     <div style={{ paddingBottom: 24, position: 'relative' }}>
       <CPTopBar onSearch={onSearch} onNotif={onNotif} />
 
-      {/* HERO — full-bleed club photo with single-line headline */}
-      <div style={{ position: 'relative', height: 320, overflow: 'hidden', marginBottom: 4 }}>
+      {/* HERO — full-bleed club photo with single-line headline (shorter for tighter top) */}
+      <div style={{ position: 'relative', height: 240, overflow: 'hidden', marginBottom: 4 }}>
         <ClubThumb id={featured.id} tint={featured.glow} size={420} ratio={0.78} fill />
         {/* Tonal scrim — lay design-system tones over photo so the hero
             doesn't read as raw saturated neon. */}
