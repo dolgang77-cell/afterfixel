@@ -25,65 +25,412 @@ function useDeferredReady() {
   return ready;
 }
 
-// PARTY SCREEN — 100% 정적. 데이터 룩업/외부 컴포넌트/아이콘 폰트 전부 제거.
-function PartyScreen({ onOpenParty }) {
-  // 정적 더미 데이터 (탭 클릭 시 즉시 페인트, 외부 의존성 0)
-  const items = [
-    { id: 'p1', title: 'REVERB Vol.12',           venue: 'Faust',     area: '청담동', time: '23:00', price: '₩45k', live: true  },
-    { id: 'p2', title: 'PISTIL — DEEP HOUSE',     venue: 'Pistil',    area: '이태원', time: '23:30', price: '₩30k', live: false },
-    { id: 'p3', title: 'VURT. 17th Anniversary',  venue: 'vurt.',     area: '한남동', time: '22:00', price: '₩55k', live: false },
-    { id: 'p4', title: 'CAKESHOP × Boiler Room',  venue: 'Cakeshop',  area: '이태원', time: '00:00', price: '₩60k', live: false },
-    { id: 'p5', title: 'CONTOURS',                venue: 'Volnost',   area: '합정동', time: '21:00', price: '₩25k', live: false },
-  ];
-  const open = (it) => {
-    if (!onOpenParty) return;
-    const real = window.CP_DATA && window.CP_DATA.parties.find(p => p.id === it.id);
-    onOpenParty(real || it);
-  };
+// ─────────────────────────────────────────────────────────────
+// Shared list-screen primitives — match the Blade x-list-toolbar
+// pattern used by parties.index / clubs.index.
+// ─────────────────────────────────────────────────────────────
+function ToolbarChip({ children, icon, iconColor = 'rgba(255,255,255,0.55)', onClick }) {
   return (
-    <div style={{ padding: '12px 16px 32px' }}>
-      <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>
-        이번 주 라인업 <span style={{ fontSize: 10, color: 'rgba(95,224,255,0.85)', letterSpacing: '0.12em', marginLeft: 6 }}>PARTY</span>
-      </h1>
+    <button onClick={onClick} style={{
+      all: 'unset', cursor: onClick ? 'pointer' : 'default',
+      display: 'inline-flex', alignItems: 'center', gap: 8,
+      minHeight: 38, flexShrink: 0,
+      padding: '8px 14px', borderRadius: 14,
+      background: 'rgba(36,36,46,0.85)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      color: '#E5E7EB', fontSize: 12, fontWeight: 700,
+      whiteSpace: 'nowrap',
+    }}>
+      <span style={{ color: iconColor, display: 'inline-flex' }}>{icon}</span>
+      {children}
+    </button>
+  );
+}
 
-      {/* 시각용 검색바 */}
-      <div style={{ marginTop: 12, padding: '11px 14px', borderRadius: 12, background: '#15151E', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
-        DJ, 클럽, 파티 검색
+function ListPill({ children, variant = 'default' }) {
+  const palette = {
+    default: { bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.55)', border: 'rgba(255,255,255,0.04)' },
+    blue:    { bg: 'rgba(59,130,246,0.10)',  color: '#60A5FA',                border: 'rgba(59,130,246,0.10)' },
+    green:   { bg: 'rgba(16,185,129,0.15)',  color: '#6EE7B7',                border: 'rgba(16,185,129,0.20)' },
+    cyan:    { bg: 'rgba(6,182,212,0.15)',   color: '#67E8F9',                border: 'rgba(6,182,212,0.20)' },
+    pink:    { bg: 'rgba(236,72,153,0.15)',  color: '#F9A8D4',                border: 'rgba(236,72,153,0.20)' },
+  };
+  const v = palette[variant] || palette.default;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+      padding: '2px 8px', borderRadius: 999,
+      fontSize: 9, fontWeight: 700, lineHeight: '14px',
+      whiteSpace: 'nowrap',
+      background: v.bg, color: v.color,
+      border: '1px solid ' + v.border,
+    }}>{children}</span>
+  );
+}
+
+function ListStatTile({ label, value }) {
+  return (
+    <div style={{
+      borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)',
+      background: 'rgba(255,255,255,0.02)', padding: '8px 12px',
+    }}>
+      <p style={{ margin: 0, fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>{label}</p>
+      <p style={{ margin: '4px 0 0', fontSize: 11, fontWeight: 700, color: '#fff' }}>{value}</p>
+    </div>
+  );
+}
+
+function ListSectionHeader({ title, subtitle, count, suffix }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+      <div style={{ minWidth: 0 }}>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{title}</h1>
+        <p style={{ margin: '4px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>{subtitle}</p>
+      </div>
+      <span style={{
+        fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)',
+        background: 'rgba(36,36,46,0.6)', padding: '4px 10px', borderRadius: 999,
+        whiteSpace: 'nowrap', flexShrink: 0,
+      }}>{count}{suffix}</span>
+    </div>
+  );
+}
+
+function SavedFilterNotice({ text }) {
+  return (
+    <div style={{ padding: '12px 16px 0', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 8,
+        minHeight: 44, padding: '10px 16px', borderRadius: 16,
+        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'rgba(36,36,46,0.85)',
+        color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 600,
+      }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6"/></svg>
+        저장 필터 준비중
+      </div>
+      <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>{text}</p>
+    </div>
+  );
+}
+
+// Bottom-sheet-style modal anchored center (matches the Blade x-teleport modal).
+function CenterModal({ children, onClose, maxWidth = 420 }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200 }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)' }} />
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        width: 'calc(100% - 32px)', maxWidth,
+        maxHeight: 'calc(100vh - 64px)',
+        background: '#0E0E14', borderRadius: 28,
+        border: '1px solid rgba(255,255,255,0.06)',
+        overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
+      }}>{children}</div>
+    </div>
+  );
+}
+
+function FilterModal({
+  title, sections, onReset, onClose,
+  resetLabel = '초기화', closeLabel = '닫기', applyLabel = '결과 보기',
+}) {
+  return (
+    <CenterModal onClose={onClose} maxWidth={420}>
+      <div style={{ padding: '20px 16px 12px' }}>
+        <div style={{ width: 48, height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.10)', margin: '0 auto 16px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>빠른 압축</p>
+            <h3 style={{ margin: '4px 0 0', fontSize: 17, fontWeight: 800, color: '#fff' }}>{title}</h3>
+          </div>
+          <button onClick={onClose} style={{
+            all: 'unset', cursor: 'pointer', width: 40, height: 40, borderRadius: 999,
+            border: '1px solid rgba(255,255,255,0.08)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.6)',
+          }}><Icon name="x" size={16} /></button>
+        </div>
+      </div>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {sections.map(sec => (
+            <div key={sec.label}>
+              <p style={{ margin: '0 0 8px', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>{sec.label}</p>
+              <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+                <button onClick={() => sec.onPick(null)} style={{
+                  all: 'unset', cursor: 'pointer', flexShrink: 0,
+                  padding: '7px 14px', borderRadius: 999,
+                  fontSize: 11, fontWeight: 700,
+                  background: sec.value == null ? 'linear-gradient(135deg,#FF1077,#7B49FF)' : 'rgba(36,36,46,0.6)',
+                  color: sec.value == null ? '#fff' : 'rgba(255,255,255,0.4)',
+                  border: '1px solid ' + (sec.value == null ? 'transparent' : 'rgba(255,255,255,0.04)'),
+                  boxShadow: sec.value == null ? '0 4px 12px rgba(255,16,119,0.32)' : 'none',
+                }}>{sec.allLabel || '전체'}</button>
+                {sec.options.map(opt => (
+                  <button key={opt} onClick={() => sec.onPick(opt)} style={{
+                    all: 'unset', cursor: 'pointer', flexShrink: 0,
+                    padding: '7px 14px', borderRadius: 999,
+                    fontSize: 11, fontWeight: 700,
+                    background: sec.value === opt ? 'rgba(236,72,153,0.15)' : 'rgba(36,36,46,0.6)',
+                    color: sec.value === opt ? '#F9A8D4' : 'rgba(255,255,255,0.4)',
+                    border: '1px solid ' + (sec.value === opt ? 'rgba(236,72,153,0.20)' : 'rgba(255,255,255,0.04)'),
+                  }}>{opt}</button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{
+        borderTop: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(14,14,20,0.95)', padding: '16px',
+      }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+          <button onClick={onReset} style={{
+            all: 'unset', cursor: 'pointer', textAlign: 'center',
+            padding: '12px 0', borderRadius: 14,
+            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(36,36,46,0.6)',
+            color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700,
+          }}>{resetLabel}</button>
+          <button onClick={onClose} style={{
+            all: 'unset', cursor: 'pointer', textAlign: 'center',
+            padding: '12px 0', borderRadius: 14,
+            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(36,36,46,0.6)',
+            color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700,
+          }}>{closeLabel}</button>
+          <button onClick={onClose} style={{
+            all: 'unset', cursor: 'pointer', textAlign: 'center',
+            padding: '12px 0', borderRadius: 14,
+            background: 'linear-gradient(135deg,#FF1077,#7B49FF)',
+            color: '#fff', fontSize: 12, fontWeight: 800,
+            boxShadow: '0 8px 20px rgba(255,16,119,0.32)',
+          }}>{applyLabel}</button>
+        </div>
+      </div>
+    </CenterModal>
+  );
+}
+
+function SortModal({ options, active, onPick, onClose }) {
+  const entries = Object.entries(options);
+  return (
+    <CenterModal onClose={onClose} maxWidth={360}>
+      <div style={{ padding: '20px 16px 12px' }}>
+        <div style={{ width: 48, height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.10)', margin: '0 auto 16px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>리스트 정렬</p>
+            <h3 style={{ margin: '4px 0 0', fontSize: 17, fontWeight: 800, color: '#fff' }}>정렬 선택</h3>
+          </div>
+          <button onClick={onClose} style={{
+            all: 'unset', cursor: 'pointer', width: 40, height: 40, borderRadius: 999,
+            border: '1px solid rgba(255,255,255,0.08)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.6)',
+          }}><Icon name="x" size={16} /></button>
+        </div>
+      </div>
+      <div style={{ padding: '0 16px 16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {entries.map(([val, label]) => {
+            const selected = active === val;
+            return (
+              <button key={val} onClick={() => onPick(val)} style={{
+                all: 'unset', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '12px 16px', borderRadius: 14,
+                border: '1px solid ' + (selected ? '#FF1077' : 'rgba(255,255,255,0.08)'),
+                background: selected ? 'rgba(255,16,119,0.10)' : 'rgba(36,36,46,0.6)',
+                color: selected ? '#fff' : 'rgba(255,255,255,0.6)',
+                fontSize: 13, fontWeight: 700,
+              }}>
+                <span>{label}</span>
+                {selected && <Icon name="check" size={14} color="#FF7AB8" />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div style={{
+        borderTop: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(14,14,20,0.95)', padding: 16,
+      }}>
+        <button onClick={onClose} style={{
+          all: 'unset', cursor: 'pointer', display: 'block', width: '100%',
+          textAlign: 'center', padding: '12px 0', borderRadius: 14,
+          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(36,36,46,0.6)',
+          color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700,
+          boxSizing: 'border-box',
+        }}>닫기</button>
+      </div>
+    </CenterModal>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// PARTY SCREEN — list view matching parties/index.blade.php.
+// ─────────────────────────────────────────────────────────────
+function PartyScreen({ onOpenParty }) {
+  const data = window.CP_DATA;
+  const allParties = data && data.parties ? data.parties : [];
+  const [filterOpen, setFilterOpen] = useStateP(false);
+  const [sortOpen, setSortOpen] = useStateP(false);
+  const [activeDate, setActiveDate] = useStateP(null);
+  const [activeArea, setActiveArea] = useStateP(null);
+  const [activeGenre, setActiveGenre] = useStateP(null);
+  const [activeSort, setActiveSort] = useStateP('recommended');
+
+  const sortLabels = { recommended: '추천순', popular: '인기순', price_low: '가격 낮은순', soonest: '오늘 빠른순' };
+  const dateOptions = ['오늘', '내일', '주말'];
+  const areaOptions = ['청담동', '한남동', '이태원', '합정동', '강남', '홍대', '성수'];
+  const genreOptions = ['TECHNO', 'HOUSE', 'DEEP', 'INDUSTRIAL', 'DISCO', 'MINIMAL', 'AMBIENT'];
+
+  let items = allParties.slice();
+  if (activeDate === '오늘') items = items.filter(p => p.date && p.date.includes('오늘'));
+  if (activeDate === '내일') items = items.filter(p => p.date && p.date.includes('내일'));
+  if (activeDate === '주말') items = items.filter(p => p.date && (p.date.includes('SAT') || p.date.includes('SUN')));
+  if (activeArea) items = items.filter(p => p.area && p.area.includes(activeArea));
+  if (activeGenre) items = items.filter(p => (p.genres || []).some(g => g.toUpperCase().includes(activeGenre)));
+  if (activeSort === 'popular') items.sort((a, b) => (b.going || 0) - (a.going || 0));
+  else if (activeSort === 'price_low') items.sort((a, b) => (a.price || 0) - (b.price || 0));
+  else if (activeSort === 'soonest') items.sort((a, b) => (a.dateISO || '').localeCompare(b.dateISO || ''));
+
+  const open = (it) => onOpenParty && onOpenParty(it);
+  const activeFilterCount = (activeDate ? 1 : 0) + (activeArea ? 1 : 0) + (activeGenre ? 1 : 0);
+
+  return (
+    <div style={{ paddingBottom: 32 }}>
+      <div style={{ padding: '20px 16px 0' }}>
+        <ListSectionHeader
+          title="파티"
+          subtitle="날짜와 지역을 먼저 좁히고 빠르게 비교하세요."
+          count={items.length}
+          suffix="개"
+        />
       </div>
 
-      {/* 시각용 툴바 */}
-      <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-        {['필터', '정렬', '지도', '비교'].map(t => (
-          <div key={t} style={{
-            flex: 1, textAlign: 'center', padding: '8px 0', borderRadius: 10,
-            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
-            color: 'rgba(255,255,255,0.55)', fontSize: 11, fontWeight: 700,
-          }}>{t}</div>
-        ))}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 30,
+        marginTop: 16, padding: '12px 16px',
+        background: 'rgba(7,7,10,0.92)', backdropFilter: 'blur(12px)',
+      }}>
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+          <ToolbarChip onClick={() => setFilterOpen(true)} icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h18M6.75 12h10.5M10.5 19.5h3"/></svg>}>
+            필터{activeFilterCount > 0 && <span style={{ marginLeft: 4, padding: '0 6px', borderRadius: 999, background: 'rgba(255,16,119,0.20)', color: '#FFB8DA', fontSize: 10, fontWeight: 800 }}>{activeFilterCount}</span>}
+          </ToolbarChip>
+          <ToolbarChip onClick={() => setSortOpen(true)} icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5m-12 5.25h12m-8.25 5.25h8.25"/></svg>}>
+            정렬 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>{sortLabels[activeSort]}</span>
+          </ToolbarChip>
+          <ToolbarChip iconColor="#67E8F9" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg>}>지도</ToolbarChip>
+          <ToolbarChip iconColor="#C4B5FD" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>}>비교 <span style={{ marginLeft: 4, padding: '1px 6px', borderRadius: 999, background: 'rgba(139,92,246,0.15)', color: '#C4B5FD', fontSize: 10, fontWeight: 800 }}>0</span></ToolbarChip>
+          <ToolbarChip iconColor="#F472B6" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 0l3.75-3.75m-3.75 3.75l3.75 3.75"/></svg>}>{items.length} <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>결과</span></ToolbarChip>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, padding: '0 4px', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+          <p style={{ margin: 0 }}>필터와 정렬을 유지한 채 지도와 리스트를 전환할 수 있습니다.</p>
+          <p style={{ margin: 0 }}>{sortLabels[activeSort]}</p>
+        </div>
       </div>
 
-      {/* 리스트 */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
-        {items.map(p => (
-          <div key={p.id} onClick={() => open(p)} style={{
-            cursor: 'pointer', padding: 14, borderRadius: 14,
-            background: '#15151E', border: '1px solid rgba(255,255,255,0.06)',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10,
-          }}>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>{p.venue}</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', marginTop: 2 }}>{p.title}</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 4 }}>{p.area} · {p.time}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>{p.price}</div>
-              {p.live && <div style={{ fontSize: 9, fontWeight: 700, color: '#FF1077', letterSpacing: '0.12em', marginTop: 2 }}>LIVE</div>}
-            </div>
+      <SavedFilterNotice text="현재 조건을 저장해 두면 새 파티나 장소가 맞춰 등록될 때 알림으로 다시 받을 수 있습니다." />
+
+      <div style={{ padding: '12px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {items.length === 0 ? (
+          <div style={{
+            padding: '40px 16px', textAlign: 'center', color: 'rgba(255,255,255,0.4)',
+            fontSize: 13, border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 14,
+          }}>조건에 맞는 파티가 없어요</div>
+        ) : items.map(p => (
+          <div key={p.id} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <button onClick={() => open(p)} style={{
+              all: 'unset', cursor: 'pointer', display: 'block',
+              borderRadius: 16, overflow: 'hidden',
+              background: '#15151E', border: '1px solid rgba(255,255,255,0.06)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'stretch', gap: 14 }}>
+                <div style={{ width: 112, flexShrink: 0, position: 'relative', minHeight: 92, background: '#0E0E14', overflow: 'hidden' }}>
+                  <ClubThumb id={p.id} tint={p.glow} size={300} ratio={0.45} fill />
+                  <FloorGlow tint={p.glow} intensity={0.5} />
+                  {p.live && (
+                    <div style={{
+                      position: 'absolute', top: 8, left: 8,
+                      padding: '3px 8px', borderRadius: 999,
+                      background: 'rgba(255,16,119,0.92)',
+                      color: '#fff', fontSize: 9, fontWeight: 800, letterSpacing: '0.10em',
+                    }}>LIVE</div>
+                  )}
+                </div>
+                <div style={{ flex: 1, padding: '12px 14px 12px 0', minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <h3 style={{
+                        margin: 0, fontSize: 13, fontWeight: 800, color: '#fff',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>{p.title}</h3>
+                      <p style={{ margin: '4px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
+                        {p.venue} · {p.area} · {(p.genres || []).join(' / ')}
+                      </p>
+                    </div>
+                    <div style={{ flexShrink: 0, textAlign: 'right' }}>
+                      <div style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>{window.CP_FORMAT.won(p.price)}</div>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                    {p.date && p.date.includes('오늘') && <ListPill variant="green">오늘 진행</ListPill>}
+                    {p.hot && <ListPill variant="cyan">PEAK</ListPill>}
+                    <ListPill>문의 가능</ListPill>
+                    <ListPill variant="blue">외국인 OK</ListPill>
+                  </div>
+                </div>
+              </div>
+              <div style={{ padding: '4px 14px 12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <ListStatTile label="가격" value={window.CP_FORMAT.won(p.price)} />
+                  <ListStatTile label="플로어" value={`${Math.round((p.going || 0) / (p.capacity || 1) * 100)}% 채움`} />
+                </div>
+                <div style={{
+                  marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  fontSize: 10, color: 'rgba(255,255,255,0.4)',
+                }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{p.time}</span>
+                  <span style={{ color: '#FF7AB8' }}>{p.date}</span>
+                </div>
+              </div>
+            </button>
+            <button style={{
+              all: 'unset', cursor: 'pointer', textAlign: 'center',
+              padding: '10px 0', borderRadius: 14,
+              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'rgba(36,36,46,0.6)',
+              color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>
+              비교 추가
+            </button>
           </div>
         ))}
       </div>
-    </div>);
 
+      {filterOpen && (
+        <FilterModal
+          title="파티 필터"
+          sections={[
+            { label: '날짜', allLabel: '전체', value: activeDate, options: dateOptions, onPick: setActiveDate },
+            { label: '지역', allLabel: '전체 지역', value: activeArea, options: areaOptions, onPick: setActiveArea },
+            { label: '장르', allLabel: '전체 장르', value: activeGenre, options: genreOptions, onPick: setActiveGenre },
+          ]}
+          onReset={() => { setActiveDate(null); setActiveArea(null); setActiveGenre(null); }}
+          onClose={() => setFilterOpen(false)}
+        />
+      )}
+      {sortOpen && (
+        <SortModal options={sortLabels} active={activeSort} onPick={(v) => { setActiveSort(v); setSortOpen(false); }} onClose={() => setSortOpen(false)} />
+      )}
+    </div>
+  );
 }
 window.PartyScreen = PartyScreen;
 
@@ -115,67 +462,172 @@ function CompareWrapRow({ mode, selected, onToggle, children }) {
 }
 window.CompareWrapRow = CompareWrapRow;
 
-// CLUB SCREEN — 100% 정적. 데이터 룩업/외부 컴포넌트/아이콘 폰트 전부 제거.
+// ─────────────────────────────────────────────────────────────
+// CLUB SCREEN — list view matching clubs/index.blade.php.
+// ─────────────────────────────────────────────────────────────
 function ClubScreen({ onOpenClub }) {
-  const items = [
-    { id: 'c1', name: 'Faust',    area: '강남구 청담동', genres: 'Techno · House',     rating: 4.6, glow: 'magenta' },
-    { id: 'c2', name: 'vurt.',    area: '용산구 한남동', genres: 'Techno · Industrial', rating: 4.6, glow: 'violet' },
-    { id: 'c3', name: 'Pistil',   area: '용산구 이태원', genres: 'House · Deep',        rating: 4.4, glow: 'cyan' },
-    { id: 'c4', name: 'Cakeshop', area: '용산구 이태원', genres: 'House · Disco',       rating: 4.5, glow: 'magenta' },
-    { id: 'c5', name: 'Volnost',  area: '마포구 합정동', genres: 'Techno',              rating: 4.3, glow: 'cyan' },
-  ];
-  const tintBg = (g) => g === 'magenta' ? 'linear-gradient(135deg,#FF1077,#7B49FF)'
-                     : g === 'cyan'    ? 'linear-gradient(135deg,#1FD2FF,#7B49FF)'
-                     :                   'linear-gradient(135deg,#7B49FF,#FF1077)';
-  const open = (it) => {
-    if (!onOpenClub) return;
-    const real = window.CP_DATA && window.CP_DATA.clubs.find(c => c.id === it.id);
-    onOpenClub(real || it);
+  const data = window.CP_DATA;
+  const allClubs = data && data.clubs ? data.clubs : [];
+  const [filterOpen, setFilterOpen] = useStateP(false);
+  const [sortOpen, setSortOpen] = useStateP(false);
+  const [activeArea, setActiveArea] = useStateP(null);
+  const [activeGenre, setActiveGenre] = useStateP(null);
+  const [foreignerOnly, setForeignerOnly] = useStateP(false);
+  const [activeSort, setActiveSort] = useStateP('recommended');
+
+  const sortLabels = {
+    recommended: '추천순',
+    popular: '인기순',
+    price_low: '가격 낮은순',
+    response_fast: '응답 빠른순',
+  };
+  const areaOptions = ['홍대', '이태원', '강남', '청담', '한남', '합정', '신사', '성수', '신촌', '건대'];
+  const genreOptions = ['Techno', 'House', 'Deep', 'Industrial', 'Disco', 'Minimal', 'R&B', 'Hip-hop'];
+
+  const priceRange = (lvl) => {
+    if (lvl >= 3) return '30,000~50,000원';
+    if (lvl >= 2) return '15,000~30,000원';
+    return '무료~15,000원';
   };
 
+  let items = allClubs.slice();
+  if (activeArea) items = items.filter(c => c.area && c.area.includes(activeArea));
+  if (activeGenre) items = items.filter(c => (c.genres || []).some(g => g.toLowerCase().includes(activeGenre.toLowerCase())));
+  if (activeSort === 'popular') items.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+  else if (activeSort === 'price_low') items.sort((a, b) => (a.priceLevel || 0) - (b.priceLevel || 0));
+  else if (activeSort === 'response_fast') items.sort((a, b) => (a.responseMin || 999) - (b.responseMin || 999));
+
+  const open = (c) => onOpenClub && onOpenClub(c);
+  const activeFilterCount = (activeArea ? 1 : 0) + (activeGenre ? 1 : 0) + (foreignerOnly ? 1 : 0);
+
   return (
-    <div style={{ padding: '12px 16px 32px' }}>
-      <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>
-        서울의 플로어 <span style={{ fontSize: 10, color: 'rgba(160,122,255,0.85)', letterSpacing: '0.12em', marginLeft: 6 }}>CLUB</span>
-      </h1>
-
-      {/* 시각용 검색바 */}
-      <div style={{ marginTop: 12, padding: '11px 14px', borderRadius: 12, background: '#15151E', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
-        클럽 검색
+    <div style={{ paddingBottom: 32 }}>
+      <div style={{ padding: '20px 16px 0' }}>
+        <ListSectionHeader
+          title="클럽"
+          subtitle="지역, 장르, 응답 속도로 빠르게 압축하세요."
+          count={items.length}
+          suffix="곳"
+        />
       </div>
 
-      {/* 시각용 툴바 */}
-      <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-        {['필터', '정렬', '지도', '비교'].map(t => (
-          <div key={t} style={{
-            flex: 1, textAlign: 'center', padding: '8px 0', borderRadius: 10,
-            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
-            color: 'rgba(255,255,255,0.55)', fontSize: 11, fontWeight: 700,
-          }}>{t}</div>
-        ))}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 30,
+        marginTop: 16, padding: '12px 16px',
+        background: 'rgba(7,7,10,0.92)', backdropFilter: 'blur(12px)',
+      }}>
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+          <ToolbarChip onClick={() => setFilterOpen(true)} icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h18M6.75 12h10.5M10.5 19.5h3"/></svg>}>
+            필터{activeFilterCount > 0 && <span style={{ marginLeft: 4, padding: '0 6px', borderRadius: 999, background: 'rgba(255,16,119,0.20)', color: '#FFB8DA', fontSize: 10, fontWeight: 800 }}>{activeFilterCount}</span>}
+          </ToolbarChip>
+          <ToolbarChip onClick={() => setSortOpen(true)} icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5m-12 5.25h12m-8.25 5.25h8.25"/></svg>}>
+            정렬 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>{sortLabels[activeSort]}</span>
+          </ToolbarChip>
+          <ToolbarChip iconColor="#67E8F9" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg>}>지도</ToolbarChip>
+          <ToolbarChip iconColor="#C4B5FD" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>}>비교 <span style={{ marginLeft: 4, padding: '1px 6px', borderRadius: 999, background: 'rgba(139,92,246,0.15)', color: '#C4B5FD', fontSize: 10, fontWeight: 800 }}>0</span></ToolbarChip>
+          <ToolbarChip iconColor="#F472B6" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 0l3.75-3.75m-3.75 3.75l3.75 3.75"/></svg>}>{items.length} <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>결과</span></ToolbarChip>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, padding: '0 4px', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+          <p style={{ margin: 0 }}>필터와 정렬을 유지한 채 지도와 리스트를 전환할 수 있습니다.</p>
+          <p style={{ margin: 0 }}>{sortLabels[activeSort]}</p>
+        </div>
       </div>
 
-      {/* 그리드 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12 }}>
-        {items.map(c => (
-          <div key={c.id} onClick={() => open(c)} style={{
-            cursor: 'pointer', borderRadius: 14, overflow: 'hidden',
-            background: '#15151E', border: '1px solid rgba(255,255,255,0.08)',
-          }}>
-            <div style={{ height: 90, background: tintBg(c.glow), position: 'relative' }}>
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, rgba(7,7,10,0.55), transparent 60%)' }} />
-              <div style={{ position: 'absolute', top: 8, right: 8, padding: '3px 8px', borderRadius: 999, background: 'rgba(12,12,18,0.94)', color: '#fff', fontSize: 11, fontWeight: 800 }}>★ {c.rating}</div>
-            </div>
-            <div style={{ padding: '10px 12px 12px' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>{c.name}</div>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{c.area}</div>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.65)', marginTop: 4 }}>{c.genres}</div>
-            </div>
+      <SavedFilterNotice text="현재 필터를 저장해 두면 다음 등록 항목이 조건과 맞을 때 알림으로 다시 받을 수 있습니다." />
+
+      <div style={{ padding: '12px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {items.length === 0 ? (
+          <div style={{
+            padding: '40px 16px', textAlign: 'center', color: 'rgba(255,255,255,0.4)',
+            fontSize: 13, border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 14,
+          }}>조건에 맞는 클럽이 없어요</div>
+        ) : items.map(c => (
+          <div key={c.id} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <button onClick={() => open(c)} style={{
+              all: 'unset', cursor: 'pointer', display: 'block',
+              borderRadius: 16, overflow: 'hidden',
+              background: '#15151E', border: '1px solid rgba(255,255,255,0.06)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'stretch', gap: 14 }}>
+                <div style={{ width: 112, flexShrink: 0, position: 'relative', minHeight: 92, background: '#0E0E14', overflow: 'hidden' }}>
+                  <ClubThumb id={c.id} tint={c.glow} size={300} ratio={0.45} fill />
+                  <FloorGlow tint={c.glow} intensity={0.45} />
+                </div>
+                <div style={{ flex: 1, padding: '12px 14px 12px 0', minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <h3 style={{
+                        margin: 0, fontSize: 13, fontWeight: 800, color: '#fff',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>{c.name}</h3>
+                      <p style={{
+                        margin: '4px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.5)',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>{c.area.split(' ').pop()} · {(c.genres || []).join(' / ')}</p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+                      {[1,2,3,4,5].map(s => (
+                        <Icon key={s} name="star" size={11}
+                          color={s <= Math.round(c.rating) ? '#FBBF24' : 'rgba(255,255,255,0.15)'} />
+                      ))}
+                      <span style={{ marginLeft: 4, fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>{c.rating}</span>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                    <ListPill>오늘 방문 추천</ListPill>
+                    <ListPill>문의 가능</ListPill>
+                    <ListPill variant="blue">외국인 OK</ListPill>
+                  </div>
+                </div>
+              </div>
+              <div style={{ padding: '4px 14px 12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <ListStatTile label="가격대" value={priceRange(c.priceLevel)} />
+                  <ListStatTile label="응답 속도" value={`${c.responseMin}분 내`} />
+                </div>
+                <div style={{
+                  marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  fontSize: 10, color: 'rgba(255,255,255,0.4)',
+                }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{c.openHours}</span>
+                  <span style={{ color: '#FF7AB8' }}>00:00 이후 방문 추천</span>
+                </div>
+              </div>
+            </button>
+            <button style={{
+              all: 'unset', cursor: 'pointer', textAlign: 'center',
+              padding: '10px 0', borderRadius: 14,
+              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'rgba(36,36,46,0.6)',
+              color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>
+              비교 추가
+            </button>
           </div>
         ))}
       </div>
-    </div>);
 
+      {filterOpen && (
+        <FilterModal
+          title="클럽 필터"
+          sections={[
+            { label: '추가 조건', allLabel: '전체', value: foreignerOnly ? '🌍 외국인 OK' : null,
+              options: ['🌍 외국인 OK'],
+              onPick: (v) => setForeignerOnly(v != null) },
+            { label: '지역', allLabel: '전체 지역', value: activeArea, options: areaOptions, onPick: setActiveArea },
+            { label: '장르', allLabel: '전체 장르', value: activeGenre, options: genreOptions, onPick: setActiveGenre },
+          ]}
+          onReset={() => { setActiveArea(null); setActiveGenre(null); setForeignerOnly(false); }}
+          onClose={() => setFilterOpen(false)}
+        />
+      )}
+      {sortOpen && (
+        <SortModal options={sortLabels} active={activeSort} onPick={(v) => { setActiveSort(v); setSortOpen(false); }} onClose={() => setSortOpen(false)} />
+      )}
+    </div>
+  );
 }
 window.ClubScreen = ClubScreen;
 

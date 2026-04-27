@@ -124,7 +124,31 @@ function ProtectionScrim({ from = 'bottom' }) {
 //   booth silhouette, bokeh haze, crowd silhouettes. Seeded by
 //   id so each club/party gets a unique-but-consistent look.
 // ─────────────────────────────────────────────────────────────
-function ClubThumb({ id = 'c1', tint = 'magenta', size = 200, ratio = 1, fill = false, style = {} }) {
+function ClubThumb({ id = 'c1', tint = 'magenta', size = 200, ratio = 1, fill = false, image, style = {} }) {
+  // 이미지가 직접 전달되거나 CP_DATA에 등록되어 있으면 실제 사진으로 렌더.
+  // 없으면 SVG 기반 합성 썸네일(아래)로 폴백.
+  let resolvedImage = image;
+  if (!resolvedImage && window.CP_DATA) {
+    const found =
+      (window.CP_DATA.clubs || []).find(x => x.id === id) ||
+      (window.CP_DATA.parties || []).find(x => x.id === id);
+    if (found && found.image) resolvedImage = found.image;
+  }
+  if (resolvedImage) {
+    const wrap = fill
+      ? { position: 'absolute', inset: 0 }
+      : { width: size, height: Math.round(size * ratio), position: 'relative' };
+    return (
+      <div style={{ ...wrap, borderRadius: 'inherit', overflow: 'hidden', background: '#0E0E14', ...style }}>
+        <img src={resolvedImage} alt="" loading="lazy" decoding="async"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(180deg, rgba(7,7,10,0.20) 0%, transparent 35%, rgba(7,7,10,0.45) 100%)',
+        }} />
+      </div>
+    );
+  }
   // CSS-only 플레이스홀더 (네트워크 fetch 0, 액박 없음, 즉각 페인트).
   // 톤(magenta/cyan/violet)에 따라 sky/floor 색상이 바뀌고, 스포트라이트/군중 실루엣을 합성.
   const seed = (window.CP_THUMB_SEED && window.CP_THUMB_SEED[id]) || { hue: 330, hue2: 270 };

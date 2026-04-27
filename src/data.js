@@ -1,8 +1,17 @@
 /* global window */
+// 썸네일이 비어있는 항목들을 위해 두루두루 사용할 Unsplash 풀.
+const CP_THUMB_POOL = [
+  'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80',
+  'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80',
+  'https://images.unsplash.com/photo-1545128485-c400e7702796?w=1200&q=80',
+  'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=1200&q=80',
+  'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&q=80',
+];
 // ClubParty mock data — parties, clubs, DJs, friends, routes
 window.CP_DATA = {
   parties: [
     {
+      image: CP_THUMB_POOL[0],
       id: 'p1', title: 'REVERB Vol.12', subtitle: 'Peggy Gou b2b Hyenah',
       venue: 'Faust', area: '청담동', city: '서울', country: 'KR',
       distance: 2.5, time: '23:00 — 06:00', date: '오늘 · TONIGHT', dateISO: '2026-04-27',
@@ -18,6 +27,7 @@ window.CP_DATA = {
       description: '청담의 격조있는 사운드 시스템 위에 올라선 글로벌 라인업. 밤새 드랍.',
     },
     {
+      image: CP_THUMB_POOL[1],
       id: 'p2', title: 'PISTIL — DEEP HOUSE NIGHT', subtitle: 'resident: DJ Soulscape',
       venue: 'Pistil', area: '이태원', city: '서울', country: 'KR',
       distance: 4.1, time: '23:30 — 05:00', date: '오늘 · TONIGHT', dateISO: '2026-04-27',
@@ -31,6 +41,7 @@ window.CP_DATA = {
       description: '딥하우스 매니아라면 매주 들르는 곳. 좁고 어두운 플로어.',
     },
     {
+      image: CP_THUMB_POOL[2],
       id: 'p3', title: 'VURT. 17th Anniversary', subtitle: 'all-nighter · 4 floors',
       venue: 'vurt.', area: '한남동', city: '서울', country: 'KR',
       distance: 5.6, time: '22:00 — 08:00', date: '내일 · SAT', dateISO: '2026-04-28',
@@ -46,6 +57,7 @@ window.CP_DATA = {
       description: '17주년 기념 all-nighter. 4개 플로어, 10시간 비트.',
     },
     {
+      image: CP_THUMB_POOL[3],
       id: 'p4', title: 'CAKESHOP × Boiler Room', subtitle: 'Honey Dijon — 4hr set',
       venue: 'Cakeshop', area: '이태원', city: '서울', country: 'KR',
       distance: 4.3, time: '00:00 — 07:00', date: 'SAT', dateISO: '2026-04-28',
@@ -59,6 +71,7 @@ window.CP_DATA = {
       description: 'Boiler Room 송출. Honey Dijon 4시간 set.',
     },
     {
+      image: CP_THUMB_POOL[4],
       id: 'p5', title: 'CONTOURS', subtitle: 'minimal · ambient · slow',
       venue: 'Volnost', area: '합정동', city: '서울', country: 'KR',
       distance: 3.2, time: '21:00 — 03:00', date: 'SUN', dateISO: '2026-04-29',
@@ -73,12 +86,12 @@ window.CP_DATA = {
     },
   ],
   clubs: [
-    { id: 'c1', name: 'Faust',     area: '강남구 청담동', cap: 600, rating: 4.6, genres: ['Techno','House'], glow: 'magenta', dress: 'smart', music: ['House','Techno'], openHours: '23:00 — 06:00', addr: '서울 강남구 도산대로 511', reviews: 1240, responseMin: 12, popularity: 92, priceLevel: 3, distance: 2.5, updatedAt: '2026-04-26T18:00:00' },
-    { id: 'c2', name: 'vurt.',     area: '용산구 한남동', cap: 800, rating: 4.6, genres: ['Techno','Industrial'], glow: 'violet', dress: 'no-dresscode', music: ['Techno','Industrial'], openHours: '22:00 — 08:00', addr: '서울 용산구 한남동 32-22', reviews: 2870, responseMin: 8, popularity: 95, priceLevel: 2, distance: 5.2, updatedAt: '2026-04-27T03:00:00' },
-    { id: 'c3', name: 'Pistil',    area: '용산구 이태원', cap: 250, rating: 4.4, genres: ['House','Deep'], glow: 'cyan', dress: 'casual', music: ['Deep House'], openHours: '23:00 — 05:00', addr: '서울 용산구 이태원동', reviews: 612, responseMin: 25, popularity: 74, priceLevel: 1, distance: 4.1, updatedAt: '2026-04-25T22:00:00' },
-    { id: 'c4', name: 'Cakeshop',  area: '용산구 이태원', cap: 320, rating: 4.5, genres: ['House','Disco'], glow: 'magenta', dress: 'smart-casual', music: ['House','Disco','Hip-hop'], openHours: '22:00 — 06:00', addr: '서울 용산구 이태원동 134', reviews: 1850, responseMin: 18, popularity: 88, priceLevel: 2, distance: 4.5, updatedAt: '2026-04-27T01:30:00' },
-    { id: 'c5', name: 'Volnost',   area: '마포구 합정동', cap: 400, rating: 4.3, genres: ['Techno'], glow: 'cyan', dress: 'no-dresscode', music: ['Techno','Minimal'], openHours: '21:00 — 04:00', addr: '서울 마포구 합정동', reviews: 480, responseMin: 35, popularity: 68, priceLevel: 1, distance: 7.8, updatedAt: '2026-04-24T20:00:00' },
-    { id: 'c6', name: 'Soap Seoul',area: '강남구 신사동', cap: 500, rating: 4.5, genres: ['House','R&B'], glow: 'violet', dress: 'smart', music: ['House','R&B'], openHours: '23:00 — 06:00', addr: '서울 강남구 도산대로', reviews: 920, responseMin: 15, popularity: 81, priceLevel: 3, distance: 2.9, updatedAt: '2026-04-27T00:00:00' },
+    { image: CP_THUMB_POOL[2], id: 'c1', name: 'Faust',     area: '강남구 청담동', cap: 600, rating: 4.6, genres: ['Techno','House'], glow: 'magenta', dress: 'smart', music: ['House','Techno'], openHours: '23:00 — 06:00', addr: '서울 강남구 도산대로 511', reviews: 1240, responseMin: 12, popularity: 92, priceLevel: 3, distance: 2.5, updatedAt: '2026-04-26T18:00:00' },
+    { image: CP_THUMB_POOL[3], id: 'c2', name: 'vurt.',     area: '용산구 한남동', cap: 800, rating: 4.6, genres: ['Techno','Industrial'], glow: 'violet', dress: 'no-dresscode', music: ['Techno','Industrial'], openHours: '22:00 — 08:00', addr: '서울 용산구 한남동 32-22', reviews: 2870, responseMin: 8, popularity: 95, priceLevel: 2, distance: 5.2, updatedAt: '2026-04-27T03:00:00' },
+    { image: CP_THUMB_POOL[4], id: 'c3', name: 'Pistil',    area: '용산구 이태원', cap: 250, rating: 4.4, genres: ['House','Deep'], glow: 'cyan', dress: 'casual', music: ['Deep House'], openHours: '23:00 — 05:00', addr: '서울 용산구 이태원동', reviews: 612, responseMin: 25, popularity: 74, priceLevel: 1, distance: 4.1, updatedAt: '2026-04-25T22:00:00' },
+    { image: CP_THUMB_POOL[0], id: 'c4', name: 'Cakeshop',  area: '용산구 이태원', cap: 320, rating: 4.5, genres: ['House','Disco'], glow: 'magenta', dress: 'smart-casual', music: ['House','Disco','Hip-hop'], openHours: '22:00 — 06:00', addr: '서울 용산구 이태원동 134', reviews: 1850, responseMin: 18, popularity: 88, priceLevel: 2, distance: 4.5, updatedAt: '2026-04-27T01:30:00' },
+    { image: CP_THUMB_POOL[1], id: 'c5', name: 'Volnost',   area: '마포구 합정동', cap: 400, rating: 4.3, genres: ['Techno'], glow: 'cyan', dress: 'no-dresscode', music: ['Techno','Minimal'], openHours: '21:00 — 04:00', addr: '서울 마포구 합정동', reviews: 480, responseMin: 35, popularity: 68, priceLevel: 1, distance: 7.8, updatedAt: '2026-04-24T20:00:00' },
+    { image: CP_THUMB_POOL[2], id: 'c6', name: 'Soap Seoul',area: '강남구 신사동', cap: 500, rating: 4.5, genres: ['House','R&B'], glow: 'violet', dress: 'smart', music: ['House','R&B'], openHours: '23:00 — 06:00', addr: '서울 강남구 도산대로', reviews: 920, responseMin: 15, popularity: 81, priceLevel: 3, distance: 2.9, updatedAt: '2026-04-27T00:00:00' },
   ],
   friends: [
     { id: 'f1', name: 'Jisoo K',    handle: '@jisoo.k',    going: 'p1', avatar: '#FF1077' },
