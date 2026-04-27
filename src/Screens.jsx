@@ -27,8 +27,9 @@ function useDeferredReady() {
 
 // PARTY SCREEN — searchable index w/ Filter / Sort / Map / Compare toolbar.
 function PartyScreen({ onOpenParty, onSearch, onNotif }) {
+  // ⚠️ Rules of Hooks: 모든 hook은 early return 전에 호출 필수
+  const ready = useDeferredReady();
   const data = window.CP_DATA;
-  const ready = useDeferredReady(); // ⚡ 탭 전환 안 막게
   const [genre, setGenre] = useStateP('전체');
   const [day, setDay] = useStateP('all');
   const [filterValue, setFilterValue] = useStateP({ areas: [], genres: [] });
@@ -78,6 +79,26 @@ function PartyScreen({ onOpenParty, onSearch, onNotif }) {
       return [...items, p];
     });
   };
+
+  // ⚡ ready=false면 헤더+스켈레톤만. 다음 idle 틱에 setReady(true) → 본 화면 마운트
+  if (!ready) {
+    return (
+      <div style={{ paddingBottom: 32 }}>
+        <CPTopBar onSearch={onSearch} onNotif={onNotif} />
+        <div style={{ padding: '14px 16px 10px' }}>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+            이번 주 라인업
+            <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(95,224,255,0.85)', letterSpacing: '0.12em', marginLeft: 8, textTransform: 'uppercase' }}>PARTY</span>
+          </h1>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 16px' }}>
+          {[0,1,2].map(i => (
+            <div key={i} style={{ height: 88, borderRadius: 14, background: 'rgba(21,21,30,0.6)', border: '1px solid rgba(255,255,255,0.04)' }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ paddingBottom: compareMode ? 230 : 32 }}>
@@ -238,8 +259,9 @@ window.CompareWrapRow = CompareWrapRow;
 
 // CLUB SCREEN — venue grid w/ Filter / Sort / Map / Compare toolbar.
 function ClubScreen({ onOpenClub, onSearch, onNotif }) {
+  // ⚠️ Rules of Hooks: 모든 hook은 early return 전에 호출 필수
+  const ready = useDeferredReady();
   const data = window.CP_DATA;
-  const ready = useDeferredReady(); // ⚡ 탭 전환 안 막게
   const [filterValue, setFilterValue] = useStateP({ areas: [], genres: [] });
   const [sortBy, setSortBy] = useStateP('recent');
   const [filterOpen, setFilterOpen] = useStateP(false);
@@ -275,6 +297,26 @@ function ClubScreen({ onOpenClub, onSearch, onNotif }) {
       return [...items, c];
     });
   };
+
+  // ⚡ ready=false면 헤더+스켈레톤만. 다음 idle 틱에 본 화면 마운트
+  if (!ready) {
+    return (
+      <div style={{ paddingBottom: 32 }}>
+        <CPTopBar onSearch={onSearch} onNotif={onNotif} />
+        <div style={{ padding: '14px 16px 10px' }}>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+            서울의 플로어
+            <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(160,122,255,0.85)', letterSpacing: '0.12em', marginLeft: 8, textTransform: 'uppercase' }}>CLUB</span>
+          </h1>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px' }}>
+          {[0,1,2,3].map(i => (
+            <div key={i} style={{ height: 200, borderRadius: 16, background: 'rgba(21,21,30,0.6)', border: '1px solid rgba(255,255,255,0.04)' }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ paddingBottom: compareMode ? 230 : 32 }}>
