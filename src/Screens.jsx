@@ -41,6 +41,10 @@ function PartyScreen({ onOpenParty, onSearch, onNotif, onTab }) {
   const [compareMode, setCompareMode] = useStateP(false);
   const [compareItems, setCompareItems] = useStateP([]);
   const [compareSheetOpen, setCompareSheetOpen] = useStateP(false);
+  // ⚡ 초기 3개만 렌더 → "더 보기" 클릭당 +5개. 동시 이미지 fetch 폭주 방지
+  const [shown, setShown] = useStateP(3);
+  // 필터/정렬 바뀌면 초기화
+  useEffectP(() => { setShown(3); }, [genre, day, filterValue, sortBy]);
 
   const genres = ['전체', 'TECHNO', 'HOUSE', 'DEEP', 'DISCO', 'INDUSTRIAL', 'MINIMAL', 'AMBIENT', 'R&B'];
   const allAreas = data ? Array.from(new Set(data.parties.map(p => p.area))) : [];
@@ -174,17 +178,31 @@ function PartyScreen({ onOpenParty, onSearch, onNotif, onTab }) {
               <div style={{ fontSize: 13, fontWeight: 600 }}>맞는 파티가 없어</div>
               <div style={{ marginTop: 4, fontSize: 11 }}>필터를 다시 시도해봐</div>
             </div>
-          ) : list.map(p => (
-            <div key={p.id} style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 120px' }}>
-              <CompareWrapRow
-                mode={compareMode}
-                selected={!!compareItems.find(x => x.id === p.id)}
-                onToggle={() => toggleCompare(p)}
-              >
-                <PartyRow party={p} onOpen={compareMode ? () => toggleCompare(p) : onOpenParty} />
-              </CompareWrapRow>
-            </div>
-          ))}
+          ) : (
+            <>
+              {list.slice(0, shown).map(p => (
+                <div key={p.id} style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 120px' }}>
+                  <CompareWrapRow
+                    mode={compareMode}
+                    selected={!!compareItems.find(x => x.id === p.id)}
+                    onToggle={() => toggleCompare(p)}
+                  >
+                    <PartyRow party={p} onOpen={compareMode ? () => toggleCompare(p) : onOpenParty} />
+                  </CompareWrapRow>
+                </div>
+              ))}
+              {shown < list.length && (
+                <button onClick={() => setShown(s => s + 5)} style={{
+                  all: 'unset', cursor: 'pointer', textAlign: 'center',
+                  padding: '14px 0', borderRadius: 12,
+                  background: 'rgba(31,210,255,0.10)', border: '1px solid rgba(31,210,255,0.25)',
+                  color: '#5FE0FF', fontSize: 12, fontWeight: 800, letterSpacing: '0.04em',
+                }}>
+                  더 보기 ({list.length - shown}개 남음)
+                </button>
+              )}
+            </>
+          )}
         </div>
       )}
 
@@ -265,6 +283,9 @@ function ClubScreen({ onOpenClub, onSearch, onNotif, onTab }) {
   const [compareMode, setCompareMode] = useStateP(false);
   const [compareItems, setCompareItems] = useStateP([]);
   const [compareSheetOpen, setCompareSheetOpen] = useStateP(false);
+  // ⚡ 초기 4개만 (2x2 그리드) → "더 보기" 클릭당 +6개
+  const [shown, setShown] = useStateP(4);
+  useEffectP(() => { setShown(4); }, [filterValue, sortBy]);
 
   const allAreas = data ? Array.from(new Set(data.clubs.map(c => c.area))) : [];
   const allGenres = data ? Array.from(new Set(data.clubs.flatMap(c => c.genres))) : [];
@@ -349,39 +370,53 @@ function ClubScreen({ onOpenClub, onSearch, onNotif, onTab }) {
               <div style={{ fontSize: 13, fontWeight: 600 }}>맞는 클럽이 없어</div>
               <div style={{ marginTop: 4, fontSize: 11 }}>필터를 다시 시도해봐</div>
             </div>
-          ) : list.map(c => {
-            const selected = !!compareItems.find(x => x.id === c.id);
-            const card = (
-              <button onClick={() => compareMode ? toggleCompare(c) : onOpenClub(c)} style={{
-                all: 'unset', cursor: 'pointer', display: 'block',
-                borderRadius: 16, overflow: 'hidden',
-                background: '#15151E', border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.55)',
-              }}>
-                <div style={{ position: 'relative', height: 130, background: '#0E0E14' }}>
-                  <ClubThumb id={c.id} tint={c.glow} size={170} ratio={0.76} fill />
-                  <FloorGlow tint={c.glow} intensity={0.30} />
-                  <div style={{ position: 'absolute', top: 8, right: 8 }}>
-                    <span style={{ display: 'inline-flex', gap: 3, alignItems: 'center', padding: '3px 8px', borderRadius: 999, background: 'rgba(12,12,18,0.94)', color: '#fff', fontSize: 11, fontWeight: 800 }}>
-                      <Icon name="star" size={11} color="#C8FF1A" />{c.rating}
-                    </span>
+          ) : (
+            <>
+              {list.slice(0, shown).map(c => {
+                const selected = !!compareItems.find(x => x.id === c.id);
+                const card = (
+                  <button onClick={() => compareMode ? toggleCompare(c) : onOpenClub(c)} style={{
+                    all: 'unset', cursor: 'pointer', display: 'block',
+                    borderRadius: 16, overflow: 'hidden',
+                    background: '#15151E', border: '1px solid rgba(255,255,255,0.08)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.55)',
+                  }}>
+                    <div style={{ position: 'relative', height: 130, background: '#0E0E14' }}>
+                      <ClubThumb id={c.id} tint={c.glow} size={170} ratio={0.76} fill />
+                      <FloorGlow tint={c.glow} intensity={0.30} />
+                      <div style={{ position: 'absolute', top: 8, right: 8 }}>
+                        <span style={{ display: 'inline-flex', gap: 3, alignItems: 'center', padding: '3px 8px', borderRadius: 999, background: 'rgba(12,12,18,0.94)', color: '#fff', fontSize: 11, fontWeight: 800 }}>
+                          <Icon name="star" size={11} color="#C8FF1A" />{c.rating}
+                        </span>
+                      </div>
+                    </div>
+                    <div style={{ padding: '11px 12px 13px' }}>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>{c.name}</div>
+                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{c.area}</div>
+                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontWeight: 600, marginTop: 6 }}>cap. {c.cap} · {c.genres.join(', ')}</div>
+                    </div>
+                  </button>
+                );
+                return (
+                  <div key={c.id} style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 240px' }}>
+                    <CompareWrapRow mode={compareMode} selected={selected} onToggle={() => toggleCompare(c)}>
+                      {card}
+                    </CompareWrapRow>
                   </div>
-                </div>
-                <div style={{ padding: '11px 12px 13px' }}>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>{c.name}</div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{c.area}</div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontWeight: 600, marginTop: 6 }}>cap. {c.cap} · {c.genres.join(', ')}</div>
-                </div>
-              </button>
-            );
-            return (
-              <div key={c.id} style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 240px' }}>
-                <CompareWrapRow mode={compareMode} selected={selected} onToggle={() => toggleCompare(c)}>
-                  {card}
-                </CompareWrapRow>
-              </div>
-            );
-          })}
+                );
+              })}
+              {shown < list.length && (
+                <button onClick={() => setShown(s => s + 6)} style={{
+                  all: 'unset', cursor: 'pointer', textAlign: 'center', gridColumn: '1 / -1',
+                  padding: '14px 0', borderRadius: 12,
+                  background: 'rgba(160,122,255,0.10)', border: '1px solid rgba(160,122,255,0.30)',
+                  color: '#A07AFF', fontSize: 12, fontWeight: 800, letterSpacing: '0.04em',
+                }}>
+                  더 보기 ({list.length - shown}개 남음)
+                </button>
+              )}
+            </>
+          )}
         </div>
       )}
 
