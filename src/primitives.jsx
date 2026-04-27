@@ -121,33 +121,21 @@ function ProtectionScrim({ from = 'bottom' }) {
 //   booth silhouette, bokeh haze, crowd silhouettes. Seeded by
 //   id so each club/party gets a unique-but-consistent look.
 // ─────────────────────────────────────────────────────────────
-// 클럽 사진 풀 (Unsplash 무료, 자유 사용). id 해시로 결정적으로 한 장 선택 →
-// 같은 클럽은 항상 같은 사진. 다른 클럽은 다양한 사진.
-const CLUB_PHOTOS = [
-  'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=600&q=75',
-  'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=75',
-  'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=600&q=75',
-  'https://images.unsplash.com/photo-1581974944026-5d6ed762f617?auto=format&fit=crop&w=600&q=75',
-  'https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?auto=format&fit=crop&w=600&q=75',
-  'https://images.unsplash.com/photo-1545128485-c400e7702796?auto=format&fit=crop&w=600&q=75',
-  'https://images.unsplash.com/photo-1485872299829-c673f5194813?auto=format&fit=crop&w=600&q=75',
-  'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?auto=format&fit=crop&w=600&q=75',
-  'https://images.unsplash.com/photo-1574391884720-bbc049ec09ad?auto=format&fit=crop&w=600&q=75',
-  'https://images.unsplash.com/photo-1565035010268-a3816f98589a?auto=format&fit=crop&w=600&q=75',
-];
-function clubPhotoFor(id) {
-  let h = 5381;
-  for (let i = 0; i < id.length; i++) h = ((h << 5) + h + id.charCodeAt(i)) | 0;
-  return CLUB_PHOTOS[Math.abs(h) % CLUB_PHOTOS.length];
-}
-
 function ClubThumb({ id = 'c1', tint = 'magenta', size = 200, ratio = 1, fill = false, style = {} }) {
-  // 실제 클럽 사진 + 톤 오버레이로 클럽파티 룩 유지 (이전 CSS-only 플레이스홀더 → 진짜 사진)
+  // CSS-only 플레이스홀더 (네트워크 fetch 0, 액박 없음, 즉각 페인트).
+  // 톤(magenta/cyan/violet)에 따라 sky/floor 색상이 바뀌고, 스포트라이트/군중 실루엣을 합성.
+  const seed = (window.CP_THUMB_SEED && window.CP_THUMB_SEED[id]) || { hue: 330, hue2: 270 };
+  let { hue, hue2 } = seed;
+  // tint가 명시되면 우선 적용
+  if (tint === 'magenta') { hue = 330; hue2 = 290; }
+  else if (tint === 'cyan') { hue = 195; hue2 = 220; }
+  else if (tint === 'violet') { hue = 265; hue2 = 285; }
+
   const w = size, h = Math.round(size * ratio);
-  const photo = clubPhotoFor(id);
-  const tintColor = tint === 'magenta' ? 'rgba(255,16,119,0.35)'
-                  : tint === 'cyan'    ? 'rgba(31,210,255,0.30)'
-                  :                      'rgba(123,73,255,0.32)';
+  // pseudo-random based on id (used for tiny variation only)
+  let s = 0;
+  for (let k = 0; k < id.length; k++) s = (s * 31 + id.charCodeAt(k)) % 9973;
+  const offset = (s % 100) - 50;
 
   const wrapStyle = fill
     ? { position: 'absolute', inset: 0 }
@@ -158,33 +146,47 @@ function ClubThumb({ id = 'c1', tint = 'magenta', size = 200, ratio = 1, fill = 
       ...wrapStyle,
       borderRadius: 'inherit',
       overflow: 'hidden',
-      background: '#0E0E14',
+      background: `
+        radial-gradient(ellipse 80% 50% at 50% 35%, hsla(${hue}, 95%, 55%, 0.45), transparent 60%),
+        linear-gradient(180deg,
+          hsla(${hue2}, 60%, 14%, 1) 0%,
+          hsla(${hue}, 70%, 10%, 1) 55%,
+          #04040A 100%)
+      `,
       ...style,
     }}>
-      {/* 클럽 사진 */}
-      <img
-        src={photo}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover',
-          filter: 'saturate(1.05) contrast(1.05)',
-          display: 'block',
-        }}
-      />
-      {/* 색조 오버레이 — 각 클럽 톤(magenta/cyan/violet) 살짝 입힘 */}
+      {/* Spotlight cone */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: `linear-gradient(180deg, ${tintColor} 0%, transparent 50%, rgba(7,7,10,0.45) 100%)`,
-        mixBlendMode: 'multiply',
+        background: `
+          conic-gradient(from ${180 + offset * 0.2}deg at 50% 60%,
+            transparent 0deg,
+            transparent 150deg,
+            hsla(${hue}, 90%, 65%, 0.18) 175deg,
+            hsla(${hue2}, 90%, 70%, 0.28) 180deg,
+            hsla(${hue}, 90%, 65%, 0.18) 185deg,
+            transparent 210deg,
+            transparent 360deg)
+        `,
+        opacity: 0.85,
       }} />
-      {/* 하단 비네트 — 텍스트 가독성 */}
+      {/* Floor glow */}
       <div style={{
-        position: 'absolute', left: 0, right: 0, bottom: 0, height: '40%',
-        background: 'linear-gradient(0deg, rgba(7,7,10,0.7) 0%, transparent 100%)',
+        position: 'absolute', left: 0, right: 0, bottom: 0, height: '32%',
+        background: `linear-gradient(0deg, hsla(${hue}, 95%, 50%, 0.32), transparent)`,
+      }} />
+      {/* Crowd silhouette */}
+      <svg viewBox="0 0 100 30" preserveAspectRatio="none"
+           style={{ position: 'absolute', left: 0, right: 0, bottom: 0, width: '100%', height: '24%', display: 'block' }}>
+        <path
+          d="M0,30 L0,18 Q4,10 7,16 Q10,8 13,14 Q16,5 19,12 Q22,9 25,14 Q28,7 31,13 Q34,10 37,15 Q40,6 43,12 Q46,9 49,14 Q52,7 55,13 Q58,10 61,15 Q64,5 67,12 Q70,9 73,14 Q76,7 79,13 Q82,10 85,15 Q88,8 91,13 Q94,11 97,14 Q100,9 100,16 L100,30 Z"
+          fill="#000"
+        />
+      </svg>
+      {/* Top vignette */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, rgba(7,7,10,0.35) 0%, transparent 30%)',
       }} />
     </div>
   );
