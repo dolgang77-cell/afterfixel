@@ -135,14 +135,16 @@ function PartyScreen({ onOpenParty, onSearch, onNotif }) {
               <div style={{ marginTop: 4, fontSize: 11 }}>필터를 다시 시도해봐</div>
             </div>
           ) : list.map(p => (
-            <CompareWrapRow
-              key={p.id}
-              mode={compareMode}
-              selected={!!compareItems.find(x => x.id === p.id)}
-              onToggle={() => toggleCompare(p)}
-            >
-              <PartyRow party={p} onOpen={compareMode ? () => toggleCompare(p) : onOpenParty} />
-            </CompareWrapRow>
+            // ⚡ content-visibility: 화면 밖 행은 렌더 스킵 → 탭 전환 즉각화
+            <div key={p.id} style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 120px' }}>
+              <CompareWrapRow
+                mode={compareMode}
+                selected={!!compareItems.find(x => x.id === p.id)}
+                onToggle={() => toggleCompare(p)}
+              >
+                <PartyRow party={p} onOpen={compareMode ? () => toggleCompare(p) : onOpenParty} />
+              </CompareWrapRow>
+            </div>
           ))}
         </div>
       )}
@@ -311,9 +313,12 @@ function ClubScreen({ onOpenClub, onSearch, onNotif }) {
               </button>
             );
             return (
-              <CompareWrapRow key={c.id} mode={compareMode} selected={selected} onToggle={() => toggleCompare(c)}>
-                {card}
-              </CompareWrapRow>
+              // ⚡ content-visibility: 화면 밖 카드는 렌더 스킵 → 탭 전환 즉각화
+              <div key={c.id} style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 240px' }}>
+                <CompareWrapRow mode={compareMode} selected={selected} onToggle={() => toggleCompare(c)}>
+                  {card}
+                </CompareWrapRow>
+              </div>
             );
           })}
         </div>
