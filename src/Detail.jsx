@@ -262,7 +262,7 @@ function PartyDetail({ party, onBack, onOpenClub }) {
       display: 'flex', flexDirection: 'column',
     }}>
       {/* Hero */}
-      <div style={{ position: 'relative', height: 280, overflow: 'hidden', flexShrink: 0 }}>
+      <div style={{ position: 'relative', height: 200, overflow: 'hidden', flexShrink: 0 }}>
         <FloorGlow tint={party.glow} intensity={0.85} />
         <ClubThumb id={party.id} tint={party.glow} size={420} ratio={0.86} fill />
         <div style={{
@@ -286,7 +286,7 @@ function PartyDetail({ party, onBack, onOpenClub }) {
 
         {/* TONIGHT badge — top right (offset below the icon row) */}
         {party.date && party.date.includes('오늘') && (
-          <div style={{ position: 'absolute', top: 64, right: 16, zIndex: 3 }}>
+          <div style={{ position: 'absolute', top: 58, right: 16, zIndex: 3 }}>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               fontSize: 10, fontWeight: 900, color: '#fff',
@@ -610,7 +610,7 @@ function ClubDetail({ club, onBack, onOpenParty }) {
       display: 'flex', flexDirection: 'column',
     }}>
       {/* Hero */}
-      <div style={{ position: 'relative', height: 280, overflow: 'hidden', flexShrink: 0 }}>
+      <div style={{ position: 'relative', height: 200, overflow: 'hidden', flexShrink: 0 }}>
         <ClubThumb id={club.id} tint={club.glow} size={420} ratio={0.76} fill />
         <FloorGlow tint={club.glow} intensity={0.45} />
         <div style={{

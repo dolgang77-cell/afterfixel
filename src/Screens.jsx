@@ -271,6 +271,288 @@ function SortModal({ options, active, onPick, onClose }) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// MapPanel — matches partials/list-map-panel.blade.php.
+// 좌표가 없어 id 시드로 의사 위치를 만들어 핀을 배치.
+// ─────────────────────────────────────────────────────────────
+function MapPanel({ title, subtitle, items, type, onOpen, onClose }) {
+  const points = items.map((it, i) => {
+    let s = 0;
+    for (let k = 0; k < it.id.length; k++) s = (s * 31 + it.id.charCodeAt(k)) % 9973;
+    const x = 12 + (s % 76);
+    const y = 14 + ((s >> 3) % 72);
+    return { item: it, index: i + 1, x, y };
+  });
+  const open = (it) => onOpen && onOpen(it);
+  return (
+    <div style={{
+      borderRadius: 20, padding: 16, marginTop: 12,
+      border: '1px solid rgba(255,255,255,0.06)',
+      background: 'radial-gradient(circle at top right, rgba(34,211,238,0.14), transparent 38%), linear-gradient(180deg,#171727 0%,#10101a 100%)',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ minWidth: 0 }}>
+          <p style={{ margin: 0, fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', color: '#67E8F9', textTransform: 'uppercase' }}>MAP MODE</p>
+          <h2 style={{ margin: '4px 0 0', fontSize: 16, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>{title}</h2>
+          {subtitle && <p style={{ margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>{subtitle}</p>}
+        </div>
+        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{
+            borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)',
+            background: 'rgba(0,0,0,0.20)', padding: '6px 10px', textAlign: 'right',
+          }}>
+            <p style={{ margin: 0, fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>좌표 표시</p>
+            <p style={{ margin: '2px 0 0', fontSize: 14, fontWeight: 800, color: '#fff' }}>{points.length}</p>
+          </div>
+          {onClose && (
+            <button onClick={onClose} style={{
+              all: 'unset', cursor: 'pointer', width: 32, height: 32, borderRadius: 999,
+              background: 'rgba(36,36,46,0.6)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.6)',
+            }}><Icon name="x" size={14} /></button>
+          )}
+        </div>
+      </div>
+
+      {points.length > 0 ? (
+        <>
+          <div style={{
+            marginTop: 16, padding: 12, borderRadius: 22,
+            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'linear-gradient(180deg, rgba(12,18,28,0.95) 0%, rgba(18,28,42,0.92) 100%)',
+          }}>
+            <div style={{
+              position: 'relative', aspectRatio: '0.96',
+              borderRadius: 18, overflow: 'hidden',
+              border: '1px solid rgba(34,211,238,0.10)',
+              background: 'radial-gradient(circle at 20% 20%, rgba(34,211,238,0.22), transparent 24%), radial-gradient(circle at 80% 30%, rgba(59,130,246,0.18), transparent 24%), linear-gradient(180deg, rgba(12,18,28,0.96) 0%, rgba(13,22,38,0.96) 100%)',
+            }}>
+              <div style={{
+                position: 'absolute', inset: 0, opacity: 0.4,
+                backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px)',
+                backgroundSize: '28px 28px',
+              }} />
+              <div style={{
+                position: 'absolute', left: 14, top: 14,
+                padding: '4px 10px', borderRadius: 999,
+                background: 'rgba(255,255,255,0.06)',
+                color: 'rgba(255,255,255,0.7)', fontSize: 10, fontWeight: 700,
+              }}>{points.length}곳 표시중</div>
+              {points.map(p => (
+                <button key={p.item.id} onClick={() => open(p.item)} style={{
+                  all: 'unset', cursor: 'pointer',
+                  position: 'absolute',
+                  left: `${p.x}%`, top: `${100 - p.y}%`,
+                  transform: 'translate(-50%, -50%)',
+                }}>
+                  <div style={{
+                    minWidth: 36, padding: '4px 8px', borderRadius: 999,
+                    background: '#22D3EE',
+                    border: '1px solid rgba(165,243,252,0.30)',
+                    color: '#0F172A', fontSize: 11, fontWeight: 900,
+                    boxShadow: '0 10px 24px rgba(34,211,238,0.30)',
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  }}>{p.index}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {points.slice(0, 6).map(p => (
+              <button key={p.item.id} onClick={() => open(p.item)} style={{
+                all: 'unset', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: 12, borderRadius: 16,
+                background: 'rgba(36,36,46,0.85)',
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 14, flexShrink: 0,
+                  background: 'rgba(34,211,238,0.12)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#A5F3FC', fontSize: 12, fontWeight: 900,
+                }}>{p.index}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{
+                    margin: 0, fontSize: 13, fontWeight: 700, color: '#fff',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}>{type === 'party' ? p.item.title : p.item.name}</p>
+                  <p style={{
+                    margin: '2px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.4)',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}>{type === 'party' ? `${p.item.venue} · ${p.item.area}` : p.item.area}</p>
+                </div>
+                <div style={{ flexShrink: 0, textAlign: 'right' }}>
+                  <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>
+                    {type === 'party' ? window.CP_FORMAT.won(p.item.price) : `★ ${p.item.rating}`}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div style={{
+          marginTop: 16, padding: '20px 16px', borderRadius: 22,
+          border: '1px dashed rgba(255,255,255,0.08)',
+          background: 'rgba(36,36,46,0.6)',
+          fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7,
+        }}>현재 필터 결과에는 좌표가 준비된 항목이 없어요. 필터를 바꾸거나 리스트 보기에서 상세를 먼저 확인해 주세요.</div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// CompareView — matches compare/index.blade.php.
+// 2개 이상 선택 시 같은 라벨로 나란히 비교, 1개 이하면 안내.
+// ─────────────────────────────────────────────────────────────
+function CompareView({ type, items, labels, getFacts, getHeadline, getSubline, onRemove, onClear, onClose, onOpen }) {
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 200,
+      background: 'rgba(0,0,0,0.6)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 16,
+    }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0 }} />
+      <div style={{
+        position: 'relative',
+        width: '100%', maxWidth: 480,
+        maxHeight: 'calc(100vh - 32px)',
+        background: '#0E0E14', borderRadius: 24,
+        border: '1px solid rgba(255,255,255,0.06)',
+        display: 'flex', flexDirection: 'column',
+        overflow: 'hidden',
+        boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
+      }}>
+        <div style={{
+          padding: '18px 16px 12px',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12,
+        }}>
+          <div style={{ minWidth: 0 }}>
+            <h1 style={{
+              margin: 0, fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em',
+            }}>{type === 'club' ? '클럽 비교' : '파티 비교'}</h1>
+            <p style={{ margin: '4px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
+              최대 4개까지 같은 기준으로 한 번에 비교합니다.
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            {items.length > 0 && (
+              <button onClick={onClear} style={{
+                all: 'unset', cursor: 'pointer',
+                padding: '6px 12px', borderRadius: 14,
+                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'rgba(36,36,46,0.6)',
+                color: 'rgba(255,255,255,0.6)', fontSize: 11, fontWeight: 700,
+              }}>비우기</button>
+            )}
+            <button onClick={onClose} style={{
+              all: 'unset', cursor: 'pointer', width: 32, height: 32, borderRadius: 999,
+              background: 'rgba(36,36,46,0.6)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.6)',
+            }}><Icon name="x" size={14} /></button>
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+          {items.length < 2 ? (
+            <div style={{
+              padding: '28px 16px', textAlign: 'center',
+              borderRadius: 16, background: '#15151E',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}>
+              <p style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#fff' }}>비교 후보가 아직 부족해요</p>
+              <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                리스트에서 2개 이상 담아야 차이를 바로 볼 수 있어요.
+              </p>
+              <button onClick={onClose} style={{
+                all: 'unset', cursor: 'pointer', display: 'inline-block',
+                marginTop: 14, padding: '12px 24px', borderRadius: 14,
+                background: 'linear-gradient(135deg,#FF1077,#7B49FF)',
+                color: '#fff', fontSize: 13, fontWeight: 800,
+                boxShadow: '0 8px 20px rgba(255,16,119,0.32)',
+              }}>후보 더 담기</button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {items.map(it => {
+                const facts = getFacts(it);
+                return (
+                  <div key={it.id} style={{
+                    borderRadius: 16, overflow: 'hidden',
+                    background: '#15151E', border: '1px solid rgba(255,255,255,0.06)',
+                  }}>
+                    <div style={{ position: 'relative', height: 128 }}>
+                      <ClubThumb id={it.id} tint={it.glow} size={420} ratio={0.30} fill />
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        background: 'linear-gradient(0deg, #07070A 0%, rgba(7,7,10,0.45) 50%, transparent 100%)',
+                      }} />
+                      <div style={{
+                        position: 'absolute', bottom: 12, left: 12, right: 12,
+                        display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12,
+                      }}>
+                        <div style={{ minWidth: 0 }}>
+                          <p style={{
+                            margin: 0, fontSize: 15, fontWeight: 800, color: '#fff',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>{getHeadline(it)}</p>
+                          <p style={{
+                            margin: '4px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.7)',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>{getSubline(it)}</p>
+                        </div>
+                        <button onClick={() => onRemove(it.id)} style={{
+                          all: 'unset', cursor: 'pointer',
+                          padding: 8, borderRadius: 999,
+                          background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)',
+                          color: '#fff', flexShrink: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}><Icon name="x" size={14} /></button>
+                      </div>
+                    </div>
+                    <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {labels.map(label => (
+                        <div key={label} style={{
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12,
+                          padding: '10px 12px', borderRadius: 14,
+                          border: '1px solid rgba(255,255,255,0.05)',
+                          background: 'rgba(255,255,255,0.02)',
+                        }}>
+                          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{label}</span>
+                          <span style={{
+                            fontSize: 12, fontWeight: 700, color: '#fff',
+                            textAlign: 'right', maxWidth: '60%',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>{facts[label] || '-'}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ padding: '0 14px 14px' }}>
+                      <button onClick={() => { onOpen(it); onClose(); }} style={{
+                        all: 'unset', cursor: 'pointer',
+                        width: '100%', padding: '12px 0', borderRadius: 14,
+                        textAlign: 'center', boxSizing: 'border-box',
+                        background: 'linear-gradient(135deg,#FF1077,#7B49FF)',
+                        color: '#fff', fontSize: 12, fontWeight: 800,
+                        boxShadow: '0 8px 20px rgba(255,16,119,0.32)',
+                      }}>상세 보기</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // PARTY SCREEN — list view matching parties/index.blade.php.
 // ─────────────────────────────────────────────────────────────
 function PartyScreen({ onOpenParty }) {
@@ -282,6 +564,12 @@ function PartyScreen({ onOpenParty }) {
   const [activeArea, setActiveArea] = useStateP(null);
   const [activeGenre, setActiveGenre] = useStateP(null);
   const [activeSort, setActiveSort] = useStateP('recommended');
+  const [view, setView] = useStateP('list');
+  const [compareIds, setCompareIds] = useStateP([]);
+  const [compareOpen, setCompareOpen] = useStateP(false);
+  const toggleCompare = (id) => setCompareIds(ids =>
+    ids.includes(id) ? ids.filter(x => x !== id) : (ids.length >= 4 ? ids : [...ids, id])
+  );
 
   const sortLabels = { recommended: '추천순', popular: '인기순', price_low: '가격 낮은순', soonest: '오늘 빠른순' };
   const dateOptions = ['오늘', '내일', '주말'];
@@ -324,8 +612,8 @@ function PartyScreen({ onOpenParty }) {
           <ToolbarChip onClick={() => setSortOpen(true)} icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5m-12 5.25h12m-8.25 5.25h8.25"/></svg>}>
             정렬 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>{sortLabels[activeSort]}</span>
           </ToolbarChip>
-          <ToolbarChip iconColor="#67E8F9" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg>}>지도</ToolbarChip>
-          <ToolbarChip iconColor="#C4B5FD" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>}>비교 <span style={{ marginLeft: 4, padding: '1px 6px', borderRadius: 999, background: 'rgba(139,92,246,0.15)', color: '#C4B5FD', fontSize: 10, fontWeight: 800 }}>0</span></ToolbarChip>
+          <ToolbarChip onClick={() => setView(view === 'map' ? 'list' : 'map')} iconColor={view === 'map' ? '#22D3EE' : '#67E8F9'} icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg>}>{view === 'map' ? '리스트' : '지도'}</ToolbarChip>
+          <ToolbarChip onClick={() => setCompareOpen(true)} iconColor="#C4B5FD" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>}>비교 <span style={{ marginLeft: 4, padding: '1px 6px', borderRadius: 999, background: 'rgba(139,92,246,0.15)', color: '#C4B5FD', fontSize: 10, fontWeight: 800 }}>{compareIds.length}</span></ToolbarChip>
           <ToolbarChip iconColor="#F472B6" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 0l3.75-3.75m-3.75 3.75l3.75 3.75"/></svg>}>{items.length} <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>결과</span></ToolbarChip>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, padding: '0 4px', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
@@ -333,6 +621,19 @@ function PartyScreen({ onOpenParty }) {
           <p style={{ margin: 0 }}>{sortLabels[activeSort]}</p>
         </div>
       </div>
+
+      {view === 'map' && (
+        <div style={{ padding: '0 16px' }}>
+          <MapPanel
+            title="파티 지도 보기"
+            subtitle="현재 필터 결과를 좌표 기준으로 먼저 보고, 아래 리스트로 바로 비교할 수 있어요."
+            items={items}
+            type="party"
+            onOpen={open}
+            onClose={() => setView('list')}
+          />
+        </div>
+      )}
 
       <SavedFilterNotice text="현재 조건을 저장해 두면 새 파티나 장소가 맞춰 등록될 때 알림으로 다시 받을 수 있습니다." />
 
@@ -399,20 +700,48 @@ function PartyScreen({ onOpenParty }) {
                 </div>
               </div>
             </button>
-            <button style={{
-              all: 'unset', cursor: 'pointer', textAlign: 'center',
-              padding: '10px 0', borderRadius: 14,
-              border: '1px solid rgba(255,255,255,0.06)',
-              background: 'rgba(36,36,46,0.6)',
-              color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>
-              비교 추가
-            </button>
+            {(() => {
+              const inCompare = compareIds.includes(p.id);
+              return (
+                <button onClick={() => toggleCompare(p.id)} style={{
+                  all: 'unset', cursor: 'pointer', textAlign: 'center',
+                  padding: '10px 0', borderRadius: 14,
+                  border: '1px solid ' + (inCompare ? 'rgba(139,92,246,0.20)' : 'rgba(255,255,255,0.06)'),
+                  background: inCompare ? 'rgba(139,92,246,0.10)' : 'rgba(36,36,46,0.6)',
+                  color: inCompare ? '#C4B5FD' : 'rgba(255,255,255,0.7)',
+                  fontSize: 12, fontWeight: 700,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>
+                  {inCompare ? '비교함에서 제거' : '비교 추가'}
+                </button>
+              );
+            })()}
           </div>
         ))}
       </div>
+
+      {compareOpen && (
+        <CompareView
+          type="party"
+          items={allParties.filter(p => compareIds.includes(p.id))}
+          labels={['일정', '시간', '장소', '가격', '장르', '플로어']}
+          getHeadline={(p) => p.title}
+          getSubline={(p) => `${p.venue} · ${p.area}`}
+          getFacts={(p) => ({
+            '일정': p.date,
+            '시간': p.time,
+            '장소': `${p.venue} · ${p.area}`,
+            '가격': window.CP_FORMAT.won(p.price),
+            '장르': (p.genres || []).join(' · '),
+            '플로어': `${Math.round((p.going || 0) / (p.capacity || 1) * 100)}% 채움`,
+          })}
+          onRemove={(id) => toggleCompare(id)}
+          onClear={() => setCompareIds([])}
+          onClose={() => setCompareOpen(false)}
+          onOpen={open}
+        />
+      )}
 
       {filterOpen && (
         <FilterModal
@@ -474,6 +803,12 @@ function ClubScreen({ onOpenClub }) {
   const [activeGenre, setActiveGenre] = useStateP(null);
   const [foreignerOnly, setForeignerOnly] = useStateP(false);
   const [activeSort, setActiveSort] = useStateP('recommended');
+  const [view, setView] = useStateP('list');
+  const [compareIds, setCompareIds] = useStateP([]);
+  const [compareOpen, setCompareOpen] = useStateP(false);
+  const toggleCompare = (id) => setCompareIds(ids =>
+    ids.includes(id) ? ids.filter(x => x !== id) : (ids.length >= 4 ? ids : [...ids, id])
+  );
 
   const sortLabels = {
     recommended: '추천순',
@@ -523,8 +858,8 @@ function ClubScreen({ onOpenClub }) {
           <ToolbarChip onClick={() => setSortOpen(true)} icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5m-12 5.25h12m-8.25 5.25h8.25"/></svg>}>
             정렬 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>{sortLabels[activeSort]}</span>
           </ToolbarChip>
-          <ToolbarChip iconColor="#67E8F9" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg>}>지도</ToolbarChip>
-          <ToolbarChip iconColor="#C4B5FD" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>}>비교 <span style={{ marginLeft: 4, padding: '1px 6px', borderRadius: 999, background: 'rgba(139,92,246,0.15)', color: '#C4B5FD', fontSize: 10, fontWeight: 800 }}>0</span></ToolbarChip>
+          <ToolbarChip onClick={() => setView(view === 'map' ? 'list' : 'map')} iconColor={view === 'map' ? '#22D3EE' : '#67E8F9'} icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg>}>{view === 'map' ? '리스트' : '지도'}</ToolbarChip>
+          <ToolbarChip onClick={() => setCompareOpen(true)} iconColor="#C4B5FD" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>}>비교 <span style={{ marginLeft: 4, padding: '1px 6px', borderRadius: 999, background: 'rgba(139,92,246,0.15)', color: '#C4B5FD', fontSize: 10, fontWeight: 800 }}>{compareIds.length}</span></ToolbarChip>
           <ToolbarChip iconColor="#F472B6" icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 0l3.75-3.75m-3.75 3.75l3.75 3.75"/></svg>}>{items.length} <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>결과</span></ToolbarChip>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, padding: '0 4px', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
@@ -532,6 +867,19 @@ function ClubScreen({ onOpenClub }) {
           <p style={{ margin: 0 }}>{sortLabels[activeSort]}</p>
         </div>
       </div>
+
+      {view === 'map' && (
+        <div style={{ padding: '0 16px' }}>
+          <MapPanel
+            title="클럽 지도 보기"
+            subtitle="현재 필터 결과를 좌표 기준으로 먼저 보고, 아래 리스트로 바로 비교할 수 있어요."
+            items={items}
+            type="club"
+            onOpen={open}
+            onClose={() => setView('list')}
+          />
+        </div>
+      )}
 
       <SavedFilterNotice text="현재 필터를 저장해 두면 다음 등록 항목이 조건과 맞을 때 알림으로 다시 받을 수 있습니다." />
 
@@ -594,20 +942,48 @@ function ClubScreen({ onOpenClub }) {
                 </div>
               </div>
             </button>
-            <button style={{
-              all: 'unset', cursor: 'pointer', textAlign: 'center',
-              padding: '10px 0', borderRadius: 14,
-              border: '1px solid rgba(255,255,255,0.06)',
-              background: 'rgba(36,36,46,0.6)',
-              color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>
-              비교 추가
-            </button>
+            {(() => {
+              const inCompare = compareIds.includes(c.id);
+              return (
+                <button onClick={() => toggleCompare(c.id)} style={{
+                  all: 'unset', cursor: 'pointer', textAlign: 'center',
+                  padding: '10px 0', borderRadius: 14,
+                  border: '1px solid ' + (inCompare ? 'rgba(139,92,246,0.20)' : 'rgba(255,255,255,0.06)'),
+                  background: inCompare ? 'rgba(139,92,246,0.10)' : 'rgba(36,36,46,0.6)',
+                  color: inCompare ? '#C4B5FD' : 'rgba(255,255,255,0.7)',
+                  fontSize: 12, fontWeight: 700,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25v13.5m9-13.5v13.5M3.75 8.25h7.5m-7.5 7.5h7.5m1.5-7.5h7.5m-7.5 7.5h7.5"/></svg>
+                  {inCompare ? '비교함에서 제거' : '비교 추가'}
+                </button>
+              );
+            })()}
           </div>
         ))}
       </div>
+
+      {compareOpen && (
+        <CompareView
+          type="club"
+          items={allClubs.filter(c => compareIds.includes(c.id))}
+          labels={['지역', '운영시간', '드레스', '가격대', '응답', '평점']}
+          getHeadline={(c) => c.name}
+          getSubline={(c) => `${c.area} · ${(c.genres || []).join(' · ')}`}
+          getFacts={(c) => ({
+            '지역': c.area,
+            '운영시간': c.openHours,
+            '드레스': c.dress || '자유',
+            '가격대': c.priceLevel >= 3 ? '30,000~50,000원' : c.priceLevel >= 2 ? '15,000~30,000원' : '무료~15,000원',
+            '응답': `${c.responseMin}분 내`,
+            '평점': `★ ${c.rating} · ${c.reviews.toLocaleString()}`,
+          })}
+          onRemove={(id) => toggleCompare(id)}
+          onClear={() => setCompareIds([])}
+          onClose={() => setCompareOpen(false)}
+          onOpen={open}
+        />
+      )}
 
       {filterOpen && (
         <FilterModal

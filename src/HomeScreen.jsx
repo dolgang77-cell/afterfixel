@@ -167,8 +167,8 @@ function HomeScreen({ onOpenParty, onOpenClub, onSearch, onNotif, onOpenRoute, o
       <CPTopBar onSearch={onSearch} onNotif={onNotif} />
 
       {/* HERO — full-bleed club photo with single-line headline (shorter for tighter top) */}
-      <div style={{ position: 'relative', height: 240, overflow: 'hidden', marginBottom: 4 }}>
-        <ClubThumb id={featured.id} tint={featured.glow} size={420} ratio={0.78} fill />
+      <div style={{ position: 'relative', height: 170, overflow: 'hidden', marginBottom: 4 }}>
+        <ClubThumb id={featured.id} tint={featured.glow} size={420} ratio={0.55} fill />
         {/* Tonal scrim — lay design-system tones over photo so the hero
             doesn't read as raw saturated neon. */}
         <div style={{ position: 'absolute', inset: 0,
@@ -176,10 +176,10 @@ function HomeScreen({ onOpenParty, onOpenClub, onSearch, onNotif, onOpenRoute, o
         <div style={{ position: 'absolute', inset: 0,
           background: 'radial-gradient(ellipse at 70% 20%, rgba(255,16,119,0.18), transparent 60%)' }} />
 
-        <div style={{ position: 'absolute', left: 16, right: 16, bottom: 18, zIndex: 2 }}>
+        <div style={{ position: 'absolute', left: 16, right: 16, bottom: 14, zIndex: 2 }}>
           <Eyebrow color="rgba(255,184,218,0.9)">2026·04·27 · SAT · 21:43 · 강남구</Eyebrow>
           <h1 style={{
-            margin: '8px 0 6px', fontSize: 34, fontWeight: 900, letterSpacing: '-0.025em', lineHeight: 1.0,
+            margin: '4px 0 4px', fontSize: 26, fontWeight: 900, letterSpacing: '-0.025em', lineHeight: 1.05,
             whiteSpace: 'nowrap', color: '#fff',
             textShadow: '0 2px 24px rgba(0,0,0,0.6)',
           }}>
@@ -188,7 +188,7 @@ function HomeScreen({ onOpenParty, onOpenClub, onSearch, onNotif, onOpenRoute, o
               WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
             }}>근처에서</span>
           </h1>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.62)', fontWeight: 500 }}>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.62)', fontWeight: 500 }}>
             Tonight near you · <span style={{ color: '#FFB8DA', fontWeight: 700 }}>{tonight.length} parties</span>
             <span style={{ color: 'rgba(255,255,255,0.30)' }}> · </span>
             <span style={{ color: '#9CF0FF', fontWeight: 700 }}>{liveOnes.length} live now</span>
@@ -196,9 +196,9 @@ function HomeScreen({ onOpenParty, onOpenClub, onSearch, onNotif, onOpenRoute, o
         </div>
       </div>
 
-      {/* Primary CTA — opens nearby spots sheet */}
+      {/* Primary CTA — opens nearby spots sheet (toggle) */}
       <div style={{ padding: '4px 16px 0' }}>
-        <button onClick={() => setSpotsOpen(true)} style={{
+        <button onClick={() => setSpotsOpen(v => !v)} style={{
           all: 'unset', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           width: '100%', boxSizing: 'border-box', gap: 12,
           padding: '14px 16px 14px 18px', borderRadius: 16,
@@ -225,9 +225,91 @@ function HomeScreen({ onOpenParty, onOpenClub, onSearch, onNotif, onOpenRoute, o
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <PulseBars count={3} height={12} color="#fff" />
-            <Icon name="chevron-right" size={18} color="rgba(255,255,255,0.85)" />
+            <Icon name={spotsOpen ? 'chevron-up' : 'chevron-down'} size={18} color="rgba(255,255,255,0.85)" />
           </span>
         </button>
+
+        {/* Toggle sheet — pulls together live + tonight + nearby hotspots */}
+        {spotsOpen && (
+          <div style={{
+            marginTop: 10, borderRadius: 18,
+            border: '1px solid rgba(255,16,119,0.22)',
+            background: 'radial-gradient(circle at top right, rgba(255,16,119,0.10), transparent 50%), linear-gradient(180deg,#171727 0%,#0E0E14 100%)',
+            overflow: 'hidden',
+          }}>
+            <div style={{ padding: '14px 16px 6px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ margin: 0, fontSize: 10, fontWeight: 800, color: '#FFB8DA', letterSpacing: '0.14em', textTransform: 'uppercase' }}>HOT TONIGHT</p>
+                <p style={{ margin: '4px 0 0', fontSize: 14, fontWeight: 800, color: '#fff' }}>지금 뜨는 클럽 · 파티</p>
+                <p style={{ margin: '2px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>강남구에서 가까운 순으로 모았어요.</p>
+              </div>
+              <button onClick={() => setSpotsOpen(false)} style={{
+                all: 'unset', cursor: 'pointer', width: 30, height: 30, borderRadius: 999,
+                background: 'rgba(36,36,46,0.6)', border: '1px solid rgba(255,255,255,0.08)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.6)',
+                flexShrink: 0,
+              }}><Icon name="x" size={13} /></button>
+            </div>
+            <div style={{ padding: '8px 12px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {data.parties
+                .slice()
+                .sort((a, b) => (b.live ? 1 : 0) - (a.live ? 1 : 0) || (a.distance || 0) - (b.distance || 0))
+                .slice(0, 5)
+                .map(p => (
+                  <button key={p.id} onClick={() => onOpenParty && onOpenParty(p)} style={{
+                    all: 'unset', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: 10, borderRadius: 12,
+                    background: 'rgba(36,36,46,0.55)',
+                    border: '1px solid rgba(255,255,255,0.04)',
+                  }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 10, position: 'relative', overflow: 'hidden', background: '#0E0E14', flexShrink: 0 }}>
+                      <ClubThumb id={p.id} tint={p.glow} size={44} ratio={1} fill />
+                      <FloorGlow tint={p.glow} intensity={0.4} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                        {p.live && (
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 4,
+                            padding: '1px 6px', borderRadius: 4,
+                            background: 'rgba(255,16,119,0.18)', color: '#FF7AB8',
+                            fontSize: 9, fontWeight: 800, letterSpacing: '0.10em',
+                          }}><PulseBars count={2} height={6} color="#FF1077" />LIVE</span>
+                        )}
+                        <span style={{
+                          fontSize: 13, fontWeight: 800, color: '#fff',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>{p.title}</span>
+                      </div>
+                      <div style={{ marginTop: 2, fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
+                        {p.venue} · {p.area} · <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>{p.distance}km</span>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>{window.CP_FORMAT.won(p.price)}</div>
+                      <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.45)', marginTop: 2, fontFamily: 'JetBrains Mono, monospace' }}>{(p.time || '').split(' ')[0]}</div>
+                    </div>
+                  </button>
+                ))}
+            </div>
+            <div style={{ padding: '0 12px 12px', display: 'flex', gap: 8 }}>
+              <button onClick={() => { setSpotsOpen(false); onTab && onTab('party'); }} style={{
+                all: 'unset', cursor: 'pointer', flex: 1, textAlign: 'center',
+                padding: '10px 0', borderRadius: 12,
+                background: 'rgba(36,36,46,0.85)', border: '1px solid rgba(255,255,255,0.08)',
+                color: '#fff', fontSize: 12, fontWeight: 700,
+              }}>전체 파티 보기</button>
+              <button onClick={() => { setSpotsOpen(false); onTab && onTab('club'); }} style={{
+                all: 'unset', cursor: 'pointer', flex: 1, textAlign: 'center',
+                padding: '10px 0', borderRadius: 12,
+                background: 'linear-gradient(135deg,#FF1077,#7B49FF)',
+                color: '#fff', fontSize: 12, fontWeight: 800,
+                boxShadow: '0 6px 16px rgba(255,16,119,0.32)',
+              }}>전체 클럽 보기</button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick stats — calculator-key buttons */}
