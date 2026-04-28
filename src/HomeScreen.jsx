@@ -126,41 +126,44 @@ function CPTopBar({ city = '서울 · 강남구', onSearch, onNotif }) {
       padding: '8px 16px 8px',
       background: 'rgba(7,7,10,0.92)',
       borderBottom: '1px solid rgba(255,255,255,0.06)',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      minHeight: 38,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 28, height: 28, position: 'relative' }}>
-          <GlobeLoader size={28} speed={0.7} cities={false} />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-          <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.16em', textTransform: 'uppercase' }}>위치 · LIVE</span>
-          <span style={{ fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>{city}</span>
-        </div>
-        <Icon name="chevron-down" size={13} color="rgba(255,255,255,0.4)" />
-      </div>
-
-      {/* Center brand logo — absolutely positioned so left/right groups stay put */}
       <div style={{
-        position: 'absolute', left: '50%', top: '50%',
-        transform: 'translate(-50%, -50%)',
-        pointerEvents: 'none',
         display: 'flex', alignItems: 'center', gap: 5,
-        filter: 'drop-shadow(0 0 8px rgba(160,122,255,0.45))',
+        filter: 'drop-shadow(0 0 6px rgba(160,122,255,0.4))',
       }}>
         <span style={{
           width: 5, height: 5, borderRadius: 999,
           background: '#FF1077',
           boxShadow: '0 0 6px #FF1077, 0 0 12px rgba(255,16,119,0.6)',
           animation: 'cp-pulse 1.8s ease-in-out infinite',
+          flexShrink: 0,
         }} />
         <span style={{
           fontSize: 14, fontWeight: 900,
           letterSpacing: '-0.01em',
           background: 'linear-gradient(135deg,#FF7AB8 0%,#A07AFF 50%,#5AE3FF 100%)',
-          WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+          WebkitBackgroundClip: 'text', backgroundClip: 'text',
+          WebkitTextFillColor: 'transparent', color: 'transparent',
           whiteSpace: 'nowrap',
           fontFamily: "'Pretendard', system-ui, sans-serif",
         }}>noxiahub</span>
+      </div>
+
+      <div style={{
+        position: 'absolute', left: '50%', top: '50%',
+        transform: 'translate(-50%, -50%)',
+        display: 'flex', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ width: 22, height: 22, position: 'relative', flexShrink: 0 }}>
+          <GlobeLoader size={22} speed={0.7} cities={false} />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+          <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.16em', textTransform: 'uppercase' }}>위치 · LIVE</span>
+          <span style={{ fontSize: 12, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>{city}</span>
+        </div>
+        <Icon name="chevron-down" size={11} color="rgba(255,255,255,0.4)" />
       </div>
 
       <div style={{ display: 'flex', gap: 6 }}>
