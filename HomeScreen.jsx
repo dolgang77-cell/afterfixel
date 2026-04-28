@@ -213,10 +213,10 @@ function HomeScreen({ onOpenParty, onOpenClub, onSearch, onNotif, onOpenRoute, o
             whiteSpace: 'nowrap', color: '#fff',
             textShadow: '0 2px 24px rgba(0,0,0,0.6)',
           }}>
-            오늘 밤, <span style={{
+            오늘 밤,<br> <span style={{
               background: 'linear-gradient(135deg,#FF7AB8 0%,#A07AFF 50%,#5AE3FF 100%)',
               WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-            }}>근처에서</span>
+            }}>무드에 맞게</span> 골라보세요
           </h1>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.62)', fontWeight: 500 }}>
             Tonight near you · <span style={{ color: '#FFB8DA', fontWeight: 700 }}>{tonight.length} parties</span>
