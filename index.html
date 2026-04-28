@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>클럽파티 · ClubParty</title>
+  <link rel="stylesheet" href="design-system/colors_and_type.css" />
+  <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #000; min-height: 100%; font-family: 'Pretendard', system-ui, sans-serif; color: #fff; }
+    * { box-sizing: border-box; }
+    @keyframes cp-pulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.18); opacity: 1; } }
+    @keyframes cp-eq { 0% { height: 20%; } 100% { height: 100%; } }
+    @keyframes cp-drift1 { 0% { transform: translate(0,0); } 100% { transform: translate(8%,6%); } }
+    @keyframes cp-drift2 { 0% { transform: translate(0,0); } 100% { transform: translate(-6%,-4%); } }
+    @keyframes cp-drift3 { 0% { transform: translate(0,0); } 100% { transform: translate(4%,-8%); } }
+    @keyframes cp-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes cp-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    /* 풀 화면 — 핸드폰 프레임 제거 */
+    .stage { min-height: 100vh; background: #07070A; }
+    ::-webkit-scrollbar { width: 0; height: 0; }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body class="cp-app">
+  <div id="root" class="stage"></div>
+
+  <script src="src/data.js?v=7"></script>
+  <script type="text/babel" src="src/primitives.jsx?v=7"></script>
+  <script type="text/babel" src="src/loaders.jsx?v=7"></script>
+  <script type="text/babel" src="src/TabBar.jsx?v=7"></script>
+  <script type="text/babel" src="src/HomeScreen.jsx?v=7"></script>
+  <script type="text/babel" src="src/ListControls.jsx?v=7"></script>
+  <script type="text/babel" src="src/Screens.jsx?v=7"></script>
+  <script type="text/babel" src="src/Detail.jsx?v=7"></script>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // 컨테이너 — 최대 700px 폭, 가운데 정렬
+    function FullFrame({ children }) {
+      return (
+        <div style={{
+          maxWidth: 700, margin: '0 auto', minHeight: '100vh',
+          position: 'relative', background: '#07070A',
+          color: '#fff',
+        }}>
+          {children}
+        </div>
+      );
+    }
+
+    function App() {
+      const [tab, setTab] = useState('home');
+      const [splash, setSplash] = useState(true);
+      const [partyOpen, setPartyOpen] = useState(null);
+      const [clubOpen, setClubOpen] = useState(null);
+      const [search, setSearch] = useState(false);
+      const [notif, setNotif] = useState(false);
+
+      const onOpenParty = (p) => setPartyOpen(p);
+      const onOpenClub = (c) => setClubOpen(c);
+      const onSearch = () => setSearch(true);
+      const onNotif = () => setNotif(true);
+
+      const onChangeTab = (id) => {
+        setPartyOpen(null);
+        setClubOpen(null);
+        setSearch(false);
+        setNotif(false);
+        setTab(id);
+      };
+
+      // Lazy-mount tabs: mount each tab the first time it's visited, then
+      // keep it mounted and toggle visibility with display:none.
+      // This pays the mount cost once (when tab is first opened) instead of
+      // on every tab switch — and preserves scroll position + state.
+      const [mounted, setMounted] = useState({ home: true });
+      useEffect(() => { if (!mounted[tab]) setMounted(m => ({ ...m, [tab]: true })); }, [tab]);
+
+      const tabScreen = (id) => {
+        if (id === 'home')  return <HomeScreen  onOpenParty={onOpenParty} onOpenClub={onOpenClub} onSearch={onSearch} onNotif={onNotif} onTab={onChangeTab} />;
+        if (id === 'party') return <PartyScreen onOpenParty={onOpenParty} onSearch={onSearch} onNotif={onNotif} onTab={onChangeTab} />;
+        if (id === 'club')  return <ClubScreen  onOpenClub={onOpenClub}  onSearch={onSearch} onNotif={onNotif} onTab={onChangeTab} />;
+        if (id === 'route') return <RouteScreen onOpenClub={onOpenClub}  onSearch={onSearch} onNotif={onNotif} />;
+        if (id === 'me')    return <MeScreen    onOpenParty={onOpenParty} onSearch={onSearch} onNotif={onNotif} />;
+      };
+
+      return (
+        <FullFrame>
+          {splash && <SplashScreen onDone={() => setSplash(false)} />}
+          <div data-screen-label={tab} style={{ position: 'fixed', inset: 0, maxWidth: 700, margin: '0 auto' }}>
+            {['home', 'party', 'club', 'route', 'me'].map(id => (
+              <div key={id} style={{
+                position: 'absolute', inset: 0, paddingBottom: 84,
+                display: tab === id ? 'block' : 'none',
+              }}>
+                <div style={{ height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
+                  {mounted[id] ? tabScreen(id) : null}
+                </div>
+              </div>
+            ))}
+          </div>
+          <TabBar active={tab} onChange={onChangeTab} />
+
+          {/* Overlays */}
+          {partyOpen && <PartyDetail party={partyOpen} onBack={() => setPartyOpen(null)} onOpenClub={(c) => { setPartyOpen(null); setClubOpen(c); }} />}
+          {clubOpen && <ClubDetail club={clubOpen} onBack={() => setClubOpen(null)} onOpenParty={(p) => { setClubOpen(null); setPartyOpen(p); }} />}
+          {search && <SearchModal onClose={() => setSearch(false)} onOpenParty={onOpenParty} onOpenClub={onOpenClub} />}
+          {notif && <NotificationsPanel onClose={() => setNotif(false)} onOpenParty={onOpenParty} />}
+        </FullFrame>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
