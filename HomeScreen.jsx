@@ -133,13 +133,14 @@ function CPTopBar({ city = '서울 · 강남구', onSearch, onNotif }) {
         display: 'flex', alignItems: 'center', gap: 5,
         filter: 'drop-shadow(0 0 6px rgba(160,122,255,0.4))',
       }}>
-        /*<span style={{
-          width: 5, height: 5, borderRadius: 999,
-          background: '#FF1077',
-          boxShadow: '0 0 6px #FF1077, 0 0 12px rgba(255,16,119,0.6)',
-          animation: 'cp-pulse 1.8s ease-in-out infinite',
-          flexShrink: 0,
-        }} />*/
+        {/* <span style={{
+    width: 5, height: 5, borderRadius: 999,
+    background: '#FF1077',
+    boxShadow: '0 0 6px #FF1077, 0 0 12px rgba(255,16,119,0.6)',
+    animation: 'cp-pulse 1.8s ease-in-out infinite',
+    flexShrink: 0,
+}} /> 
+*/}
         <span style={{
           fontSize: 20, fontWeight: 900,
           letterSpacing: '-0.01em',
