@@ -141,7 +141,7 @@ function CPTopBar({ city = '서울 · 강남구', onSearch, onNotif }) {
           flexShrink: 0,
         }} />
         <span style={{
-          fontSize: 14, fontWeight: 900,
+          fontSize: 20, fontWeight: 900,
           letterSpacing: '-0.01em',
           background: 'linear-gradient(135deg,#FF7AB8 0%,#A07AFF 50%,#5AE3FF 100%)',
           WebkitBackgroundClip: 'text', backgroundClip: 'text',
@@ -161,7 +161,7 @@ function CPTopBar({ city = '서울 · 강남구', onSearch, onNotif }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
           <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.16em', textTransform: 'uppercase' }}>위치 · LIVE</span>
-          <span style={{ fontSize: 12, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>{city}</span>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>{city}</span>
         </div>
         <Icon name="chevron-down" size={11} color="rgba(255,255,255,0.4)" />
       </div>
