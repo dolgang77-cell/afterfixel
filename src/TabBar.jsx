@@ -23,7 +23,8 @@ function TabBar({ active, onChange }) {
   return (
     <div style={{
       position: 'absolute', left: 0, right: 0, bottom: 0,
-      paddingTop: 8, paddingBottom: 28,
+      paddingTop: 8,
+      paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 14px)',
       background: skin.bg,
       borderTop: `1px solid ${skin.border}`,
       boxShadow: `0 -12px 32px ${skin.glow}`,

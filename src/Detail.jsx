@@ -257,7 +257,8 @@ function PartyDetail({ party, onBack, onOpenClub }) {
 
   return (
     <div style={{
-      position: 'absolute', top: 0, left: 0, right: 0, bottom: 84,
+      position: 'absolute', top: 0, left: 0, right: 0,
+      bottom: 'calc(env(safe-area-inset-bottom, 0px) + 70px)',
       background: '#07070A', overflowY: 'auto', zIndex: 100,
       display: 'flex', flexDirection: 'column',
     }}>
@@ -605,7 +606,8 @@ function ClubDetail({ club, onBack, onOpenParty }) {
 
   return (
     <div style={{
-      position: 'absolute', top: 0, left: 0, right: 0, bottom: 84,
+      position: 'absolute', top: 0, left: 0, right: 0,
+      bottom: 'calc(env(safe-area-inset-bottom, 0px) + 70px)',
       background: '#07070A', overflowY: 'auto', zIndex: 100,
       display: 'flex', flexDirection: 'column',
     }}>
