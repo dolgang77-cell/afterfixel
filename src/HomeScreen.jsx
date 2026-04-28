@@ -138,6 +138,31 @@ function CPTopBar({ city = '서울 · 강남구', onSearch, onNotif }) {
         </div>
         <Icon name="chevron-down" size={13} color="rgba(255,255,255,0.4)" />
       </div>
+
+      {/* Center brand logo — absolutely positioned so left/right groups stay put */}
+      <div style={{
+        position: 'absolute', left: '50%', top: '50%',
+        transform: 'translate(-50%, -50%)',
+        pointerEvents: 'none',
+        display: 'flex', alignItems: 'center', gap: 5,
+        filter: 'drop-shadow(0 0 8px rgba(160,122,255,0.45))',
+      }}>
+        <span style={{
+          width: 5, height: 5, borderRadius: 999,
+          background: '#FF1077',
+          boxShadow: '0 0 6px #FF1077, 0 0 12px rgba(255,16,119,0.6)',
+          animation: 'cp-pulse 1.8s ease-in-out infinite',
+        }} />
+        <span style={{
+          fontSize: 14, fontWeight: 900,
+          letterSpacing: '-0.01em',
+          background: 'linear-gradient(135deg,#FF7AB8 0%,#A07AFF 50%,#5AE3FF 100%)',
+          WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+          whiteSpace: 'nowrap',
+          fontFamily: "'Pretendard', system-ui, sans-serif",
+        }}>noxiahub</span>
+      </div>
+
       <div style={{ display: 'flex', gap: 6 }}>
         <button onClick={onSearch} style={{ all: 'unset', cursor: 'pointer', width: 38, height: 38, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }}>
           <Icon name="search" size={17} />
