@@ -213,7 +213,7 @@ function HomeScreen({ onOpenParty, onOpenClub, onSearch, onNotif, onOpenRoute, o
             whiteSpace: 'nowrap', color: '#fff',
             textShadow: '0 2px 24px rgba(0,0,0,0.6)',
           }}>
-            오늘 밤,<br> <span style={{
+            오늘 밤,<br /> <span style={{
               background: 'linear-gradient(135deg,#FF7AB8 0%,#A07AFF 50%,#5AE3FF 100%)',
               WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
             }}>무드에 맞게</span> 골라보세요
